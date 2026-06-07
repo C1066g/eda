@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通信网络技术 · 题库模考</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F3F0EB;--surface:#FFFFFF;--text:#2D2B28;--text2:#7A7670;--text3:#B0ACA5;--accent:#5B6FEF;--green:#3DA06C;--red:#D9505C;--amber:#D4920A;--border:#E0DBD3;--radius:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;padding:24px 20px}
+.app{max-width:860px;margin:0 auto}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(243,240,235,0.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:14px 0;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.topbar h1{font-size:1.1rem;font-weight:700;color:var(--text)}
+.topbar .score{font-size:0.95rem;font-weight:700;color:var(--accent)}
+.abar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.act{padding:8px 18px;border-radius:18px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;border:none}
+.act-submit{background:var(--accent);color:#fff;box-shadow:0 2px 12px rgba(91,111,239,0.2)}
+.act-submit:hover{box-shadow:0 4px 20px rgba(91,111,239,0.3)}
+.act-reset{background:var(--surface);color:var(--text2);border:1px solid var(--border)}
+.act-reset:hover{border-color:var(--accent);color:var(--accent)}
+.stats{font-size:0.73rem;color:var(--text2);margin-bottom:12px;display:flex;gap:14px;flex-wrap:wrap}
+.stats .dot{width:8px;height:8px;border-radius:50%;display:inline-block}.dot-c{background:var(--green)}.dot-w{background:var(--red)}.dot-p{background:var(--text3)}
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:10px;transition:border-color .3s;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+.qcard.wrong{border-color:rgba(217,80,92,0.3);background:#FFF5F5}
+.qcard.correct{border-color:rgba(61,160,108,0.3);background:#F5FFFA}
+.qhead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.qnum{font-size:0.73rem;font-weight:600;color:var(--accent);white-space:nowrap}
+.qtext{font-size:0.88rem;line-height:1.55;color:var(--text);margin-bottom:10px}
+.qopts{display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:0.84rem;line-height:1.4}
+.opt:hover{border-color:var(--accent);background:rgba(91,111,239,0.04)}
+.opt.selected{border-color:var(--accent);background:rgba(91,111,239,0.06)}
+.opt.correct-answer{border-color:var(--green)!important;background:rgba(61,160,108,0.08)!important}
+.opt.wrong-answer{border-color:var(--red)!important;background:rgba(217,80,92,0.06)!important}
+.opt-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--text3);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.opt.selected .opt-radio{border-color:var(--accent);background:var(--accent)}
+.opt.selected .opt-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff}
+.opt-res{font-size:0.75rem;padding:6px 10px;margin-top:6px;border-radius:8px;display:none}
+.opt-res.show{display:block}
+.opt-res.correct{border-left:2px solid var(--green);background:rgba(61,160,108,0.06);color:var(--green)}
+.opt-res.wrong{border-left:2px solid var(--red);background:rgba(217,80,92,0.06);color:var(--red)}
+.nav-home{display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--text2);text-decoration:none;margin-bottom:10px;padding:4px 10px;border-radius:12px;border:1px solid var(--border);background:var(--surface)}
+.nav-home:hover{color:var(--accent);border-color:var(--accent)}
+.timer{font-size:0.85rem;font-weight:700;color:var(--amber);font-variant-numeric:tabular-nums}
+@media(max-width:600px){body{padding:10px}.qcard{padding:14px 15px}.qtext{font-size:0.84rem}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script src="题库数据.js"></script>
+<script>
+const VALID_Q=BANK_Q.filter(q=>q.ans!=null&&q.opts&&q.opts.length>=2);
+VALID_Q.forEach(q=>q.userAns=null);
+const WRONG_KEY='net-exam-wrong';
+let submitted=false,order=VALID_Q.map((_,i)=>i),examMode=false,wrongOnly=false,timerSec=0,timerId=null;
+if(new URLSearchParams(location.search).get('mode')==='wrong')wrongOnly=true;
+
+function qKey(q){return q.q.slice(0,60);}
+function saveWrong(q){
+  let w=[];try{w=JSON.parse(localStorage.getItem(WRONG_KEY)||'[]');}catch{}
+  const key=qKey(q);
+  if(!w.find(x=>x.q===key))w.push({q:key,src:'题库',tip:q.expl||''});
+  localStorage.setItem(WRONG_KEY,JSON.stringify(w));
+}
+function getWrongSet(){try{return new Set(JSON.parse(localStorage.getItem(WRONG_KEY)||'[]').map(x=>x.q));}catch{return new Set();}}
+function getPool(){
+  if(wrongOnly){const ws=getWrongSet();return VALID_Q.map((q,i)=>i).filter(i=>ws.has(qKey(VALID_Q[i])));}
+  return examMode?order:VALID_Q.map((_,i)=>i);
+}
+function shuffleAll(){
+  const pool=wrongOnly?getPool():VALID_Q.map((_,i)=>i);
+  order=[...pool];
+  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+  VALID_Q.forEach(q=>q.userAns=null);submitted=false;render();
+}
+function startExam(){
+  examMode=true;wrongOnly=false;submitted=false;VALID_Q.forEach(q=>q.userAns=null);
+  const all=VALID_Q.map((_,i)=>i);
+  for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
+  order=all.slice(0,30);timerSec=1800;
+  if(timerId)clearInterval(timerId);
+  timerId=setInterval(()=>{timerSec--;if(timerSec<=0){clearInterval(timerId);submitAll();}renderTimer();},1000);
+  render();
+}
+function renderTimer(){const el=document.getElementById('timer');if(!el)return;el.textContent='⏱ '+Math.floor(timerSec/60)+':'+String(timerSec%60).padStart(2,'0');}
+function resetAll(){
+  examMode=false;wrongOnly=false;
+  if(timerId){clearInterval(timerId);timerId=null;}
+  VALID_Q.forEach(q=>q.userAns=null);submitted=false;order=VALID_Q.map((_,i)=>i);render();
+}
+function submitAll(){
+  submitted=true;
+  getPool().forEach(qi=>{const q=VALID_Q[qi];if(q.userAns!=null&&q.userAns!==q.ans)saveWrong(q);});
+  if(timerId){clearInterval(timerId);timerId=null;}
+  render();window.scrollTo({top:0,behavior:'smooth'});
+}
+function pick(qi,j){VALID_Q[qi].userAns=j;render();}
+function toggleWrong(){wrongOnly=!wrongOnly;examMode=false;if(timerId){clearInterval(timerId);timerId=null;}submitted=false;order=getPool();render();}
+
+function render(){
+  const showQ=getPool();
+  let correct=0;
+  if(submitted)correct=showQ.filter(qi=>VALID_Q[qi].userAns===VALID_Q[qi].ans).length;
+  const ws=getWrongSet().size;
+  let html=`<a class=nav-home href="通信网络技术_考试中心.html">← 考试中心</a>
+  <div class=topbar><h1>通信网络技术 · 题库模考</h1>
+    <span>${examMode?'<span class=timer id=timer></span>':''}
+    <span class="score${submitted?'':' hidden'}">${correct}/${showQ.length} (${showQ.length?Math.round(correct/showQ.length*100):0}%)</span></span>
+  </div>
+  <div class=abar>
+    <button class="act act-submit" onclick="submitAll()">📝 提交批改</button>
+    <button class="act act-reset" onclick="startExam()">🎯 限时30题</button>
+    <button class="act act-shuffle act-reset" onclick="shuffleAll()">🔀 随机排序</button>
+    <button class="act act-reset" onclick="resetAll()">↺ 全部重做</button>
+    <button class="act act-reset" onclick="toggleWrong()" style="${wrongOnly?'border-color:var(--red);color:var(--red)':''}">📕 错题本${ws?'('+ws+')':''}</button>
+  </div>`;
+  if(submitted){
+    html+=`<div class=stats>
+      <span><span class="dot dot-c"></span>正确 <b>${correct}</b></span>
+      <span><span class="dot dot-w"></span>错误 <b>${showQ.length-correct}</b></span>
+      <span>共 <b>${showQ.length}</b> 题</span>
+    </div>`;
+  }else{
+    const label=examMode?'限时模考 30题':wrongOnly?'错题本':`精选 ${VALID_Q.length} 题 (已过滤${BANK_Q.length-VALID_Q.length}道坏题)`;
+    html+=`<div class=stats>📋 ${label} · 点击选项作答 → 提交批改出分</div>`;
+  }
+  if(wrongOnly&&showQ.length===0)html+=`<div class=stats style="color:var(--amber)">错题本为空，先做一轮模考</div>`;
+  for(let idx=0;idx<showQ.length;idx++){
+    const qi=showQ[idx],q=VALID_Q[qi];
+    const isWrong=submitted&&q.userAns!=null&&q.userAns!==q.ans;
+    const isCorrect=submitted&&q.userAns===q.ans;
+    html+=`<div class="qcard${isWrong?' wrong':''}${isCorrect?' correct':''}">
+      <div class=qhead><span class=qnum>#${idx+1}</span></div>
+      <div class=qtext>${q.q}</div><div class=qopts>`;
+    for(let j=0;j<q.opts.length;j++){
+      const sel=q.userAns===j;
+      let cls='opt';if(sel)cls+=' selected';
+      if(submitted&&sel)cls+=isWrong?' wrong-answer':' correct-answer';
+      if(submitted&&!sel&&j===q.ans)cls+=' correct-answer';
+      html+=`<div class="${cls}" onclick="${submitted?'':`pick(${qi},${j})`}"><span class=opt-radio></span>${q.opts[j]}</div>`;
+    }
+    html+=`</div>`;
+    if(submitted&&q.userAns!=null){
+      html+=`<div class="opt-res show ${isCorrect?'correct':'wrong'}">${isCorrect?'✅ 正确':'❌ 错误 · 正确答案：'+q.opts[q.ans]}${q.expl?' · '+q.expl:''}</div>`;
+    }
+    html+=`</div>`;
+  }
+  document.getElementById("app").innerHTML=html;
+  if(examMode&&!submitted)renderTimer();
+}
+render();
+</script>
+</body>
+</html>
