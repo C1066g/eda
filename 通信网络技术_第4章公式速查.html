@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第4章 · 子网/CIDR 公式速查</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1219;--surface:#181c28;--surface2:#1f2433;
+  --text:#e6e8f0;--text2:#8b92a8;--text3:#5a6178;
+  --accent:#6b9fff;--green:#5dd9a8;--amber:#f0b429;--red:#f07178;--purple:#b794f6;
+  --radius:12px;--mono:"SF Mono","JetBrains Mono","Menlo",monospace;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;padding:20px;-webkit-font-smoothing:antialiased;
+}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 600px 400px at 10% 0%,rgba(107,159,255,0.06),transparent),radial-gradient(ellipse 500px 350px at 90% 100%,rgba(93,217,168,0.04),transparent);pointer-events:none}
+.app{max-width:820px;margin:0 auto;position:relative;z-index:1}
+.nav-home{display:inline-flex;font-size:0.72rem;color:var(--text2);text-decoration:none;margin-bottom:12px;padding:4px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.06)}
+.nav-home:hover{color:var(--accent);border-color:rgba(107,159,255,0.3)}
+.hero{margin-bottom:20px}
+.hero h1{font-size:1.35rem;font-weight:700;background:linear-gradient(135deg,#a8c4ff,#6b9fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:0.82rem;color:var(--text2);margin-top:4px}
+
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px}
+.tab{padding:7px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);background:var(--surface);color:var(--text2);font-size:0.74rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.tab:hover{color:var(--text);border-color:rgba(255,255,255,0.12)}
+.tab.active{background:rgba(107,159,255,0.15);color:var(--accent);border-color:rgba(107,159,255,0.3)}
+
+.card{background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius);padding:18px 20px;margin-bottom:12px}
+.card h2{font-size:0.92rem;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card h2 .tag{font-size:0.62rem;padding:2px 8px;border-radius:8px;background:rgba(240,180,41,0.12);color:var(--amber);font-weight:600}
+
+.formula{
+  font-family:var(--mono);font-size:0.8rem;line-height:1.8;color:#c8d0e8;
+  background:rgba(107,159,255,0.06);border-left:3px solid rgba(107,159,255,0.35);
+  padding:12px 16px;border-radius:8px;margin:10px 0;white-space:pre-wrap;
+}
+.example{
+  font-size:0.8rem;line-height:1.7;color:var(--text2);
+  background:rgba(93,217,168,0.05);border-left:3px solid rgba(93,217,168,0.3);
+  padding:12px 16px;border-radius:8px;margin:10px 0;white-space:pre-wrap;
+}
+.ans{font-size:0.82rem;color:var(--green);font-weight:600;margin-top:8px;padding:8px 12px;background:rgba(93,217,168,0.08);border-radius:8px}
+.warn{font-size:0.76rem;color:var(--amber);margin-top:8px;line-height:1.5}
+.warn::before{content:'⚠️ '}
+
+table{width:100%;border-collapse:collapse;font-size:0.76rem;margin:10px 0}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.05)}
+th{color:var(--text3);font-weight:600;font-size:0.68rem;letter-spacing:0.04em}
+td{color:var(--text2)}
+td b{color:var(--green)}
+
+.quick{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px;margin:10px 0}
+.qi{background:var(--surface2);border-radius:8px;padding:8px 10px;text-align:center;font-size:0.72rem}
+.qi .n{font-size:1rem;font-weight:700;color:var(--accent)}
+.qi .l{color:var(--text3);margin-top:2px}
+
+.section{display:none}
+.section.active{display:block}
+
+@media(max-width:600px){body{padding:12px}.card{padding:14px 16px}.formula,.example{font-size:0.76rem}}
+</style>
+</head>
+<body>
+<div class="app">
+  <a class="nav-home" href="通信网络技术_考试中心.html">← 考试中心</a>
+  <div class="hero">
+    <h1>第4章 · 子网 / CIDR 公式速查</h1>
+    <p>网络层计算题专用 · 含作业原题例题 · 考前 10 分钟过一遍</p>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="content"></div>
+</div>
+
+<script>
+const SECTIONS=[
+{id:'subnet',label:'子网划分',html:`
+<div class="card">
+  <h2>子网划分 <span class="tag">作业Q30</span></h2>
+  <div class="formula">借 n 位 → 子网数 = 2ⁿ
+新前缀 = 原前缀 + n
+每子网总地址数 = 2^(32-新前缀)
+每子网可用地址 = 2^(32-新前缀) − 2  （去掉网络地址和广播地址）</div>
+  <div class="example">【作业原题】136.23.12.64/26 → 划 4 个等长子网
+
+① 4 个子网 → 借 log₂4 = 2 位
+② 新前缀 = 26 + 2 = /28
+③ 每子网地址数 = 2⁴ = 16 个
+④ 可用主机 = 16 − 2 = 14 个
+
+子网块：
+  136.23.12.64/28   (.64~.79,  广播 .79)
+  136.23.12.80/28   (.80~.95,  广播 .95)
+  136.23.12.96/28   (.96~.111, 广播 .111)
+  136.23.12.112/28  (.112~.127,广播 .127)
+
+可用范围：.65~.78, .81~.94, .97~.110, .113~.126</div>
+  <div class="example">【作业原题】192.168.16.0/25 均分两子网（销售+技术）
+
+/25 均分 → 借 1 位 → /26
+  子网0：192.168.16.0/26   (0~63,   广播 .63)
+  子网1：192.168.16.64/26  (64~127, 广播 .127)
+
+销售部广播 = 192.168.16.63
+技术部网络 = 192.168.16.64</div>
+  <div class="warn">可用地址 ≠ 总地址！网络地址(主机全0)和广播(主机全1)不能分配给主机</div>
+</div>`},
+
+{id:'cidr',label:'CIDR分配',html:`
+<div class="card">
+  <h2>CIDR 地址分配 <span class="tag">作业Q31</span></h2>
+  <div class="formula">① 需求 N 台主机 → 找最小 2ⁿ ≥ N+2
+② 主机位 = n  →  前缀 = 32 − n
+③ 按起始地址顺序连续分配，下一块接上一块末尾</div>
+  <div class="quick">
+    <div class="qi"><div class="n">/21</div><div class="l">2048</div></div>
+    <div class="qi"><div class="n">/20</div><div class="l">4096</div></div>
+    <div class="qi"><div class="n">/22</div><div class="l">1024</div></div>
+    <div class="qi"><div class="n">/23</div><div class="l">512</div></div>
+    <div class="qi"><div class="n">/24</div><div class="l">256</div></div>
+    <div class="qi"><div class="n">/25</div><div class="l">128</div></div>
+    <div class="qi"><div class="n">/26</div><div class="l">64</div></div>
+  </div>
+  <table>
+    <tr><th>单位</th><th>需求</th><th>分配</th><th>地址段</th><th>掩码</th></tr>
+    <tr><td>甲</td><td>2000</td><td><b>/21</b></td><td>202.0.0.0/21</td><td>255.255.248.0</td></tr>
+    <tr><td>乙</td><td>4000</td><td><b>/20</b></td><td>202.0.16.0/20</td><td>255.255.240.0</td></tr>
+    <tr><td>丙</td><td>1000</td><td><b>/22</b></td><td>202.0.8.0/22</td><td>255.255.252.0</td></tr>
+    <tr><td>丁</td><td>1000</td><td><b>/22</b></td><td>202.0.12.0/22</td><td>255.255.252.0</td></tr>
+  </table>
+  <div class="example">2000+2=2002 → 2¹¹=2048 → n=11 → /21
+4000+2=4002 → 2¹²=4096 → n=12 → /20
+1000+2=1002 → 2¹⁰=1024 → n=10 → /22</div>
+</div>`},
+
+{id:'agg',label:'路由聚合',html:`
+<div class="card">
+  <h2>路由聚合（CIDR 聚合） <span class="tag">作业Q11</span></h2>
+  <div class="formula">方法一：写二进制，找最长公共前缀
+方法二：连续 k 个 /24 块 → 聚合为 /(24−log₂k)
+
+212.56.132~135.0/24 → 4 个连续 /24 → /22</div>
+  <div class="example">132 = 10000100
+133 = 10000101
+134 = 10000110
+135 = 10000111
+      ^^^^^^ 前 6 位相同 → 16+6=22 位公共前缀
+
+→ 212.56.132.0/22</div>
+  <div class="ans">✅ 答案：212.56.132.0/22</div>
+  <div class="warn">地址块必须连续且数量为 2 的幂次才能聚合</div>
+</div>`},
+
+{id:'frag',label:'IP分片',html:`
+<div class="card">
+  <h2>IP 分片 <span class="tag">作业Q32 / Q13</span></h2>
+  <div class="formula">每片最大数据 = MTU − IP固定首部(20B)
+片数 = ⌈总数据量 / 每片最大数据⌉
+片偏移 = 数据起始字节序号 ÷ 8   （单位是 8 字节！）
+DF=0 可分片；MF=1 还有后续片，MF=0 最后一片</div>
+  <div class="example">【作业Q32】3820B 数据，MTU=1420B（含 20B 首部）
+
+每片数据 ≤ 1420−20 = 1400B
+片数 = ⌈3820/1400⌉ = 3</div>
+  <table>
+    <tr><th>片</th><th>数据范围</th><th>片偏移</th><th>DF</th><th>MF</th></tr>
+    <tr><td>1</td><td>0~1399</td><td><b>0</b></td><td>0</td><td><b>1</b></td></tr>
+    <tr><td>2</td><td>1400~2799</td><td><b>175</b></td><td>0</td><td><b>1</b></td></tr>
+    <tr><td>3</td><td>2800~3799</td><td><b>350</b></td><td>0</td><td><b>0</b></td></tr>
+  </table>
+  <div class="example">【单选Q13】4500B TCP 段 + 20B IP 首部，以太网 MTU=1500
+
+每片数据 ≤ 1500−20 = 1480B
+片数 = ⌈4500/1480⌉ = <b>4 片</b></div>
+  <div class="warn">片偏移 175 表示 175×8=1400 字节处开始，不是 175 字节！</div>
+</div>`},
+
+{id:'rip',label:'RIP',html:`
+<div class="card">
+  <h2>RIP 路由更新 <span class="tag">作业Q29</span></h2>
+  <div class="formula">收到邻居通告距离 d → 新距离 = d + 1
+若 新距离 < 当前距离 → 更新（距离, 下一跳=邻居）
+否则 → 保持原路由
+距离 16 = 不可达（RIP 最大跳数 15）</div>
+  <table>
+    <tr><th>目的</th><th>原距离/下一跳</th><th>经C新距离</th><th>结果</th></tr>
+    <tr><td>N1</td><td>4, B</td><td>2+1=3</td><td><b>3, C</b></td></tr>
+    <tr><td>N2</td><td>2, C</td><td>1+1=2</td><td><b>2, C</b>（不变）</td></tr>
+    <tr><td>N3</td><td>1, F</td><td>3+1=4</td><td><b>1, F</b>（4>1不更新）</td></tr>
+    <tr><td>N4</td><td>5, G</td><td>7+1=8</td><td><b>5, G</b>（8>5不更新）</td></tr>
+  </table>
+  <div class="formula">X 告诉邻居 K「到 Y 距离 N」→ K 若选 X 为下一跳，到 Y 距离 = N+1</div>
+  <div class="warn">TTL 每过一个路由器减 1（64 经 3 个路由 → 61）</div>
+</div>`},
+
+{id:'addr',label:'地址计算',html:`
+<div class="card">
+  <h2>网络地址 / 广播地址 <span class="tag">作业Q8~Q10</span></h2>
+  <div class="formula">网络地址 = IP AND 子网掩码
+广播地址 = 网络地址 OR (NOT 掩码)
+/10 最后一个地址 = 网络号不变 + 主机位全 1</div>
+  <div class="example">【Q9】166.66.66.66 / 255.255.192.0 (/18)
+
+IP:   166.66.01000010.01000010
+掩码: 255.255.11000000.00000000
+网络: 166.66.01000000.00000000 = 166.66.64.0
+广播: 166.66.01111111.11111111 = <b>166.66.127.255</b></div>
+  <div class="example">【Q10】10.0.0.0/10 最后一个地址
+
+/10 → 后 22 位为主机号全 1
+→ <b>10.63.255.255</b></div>
+  <div class="example">【二进制转点分十进制】
+11000000 11111110 00001111 11110000
+→ 192 . 254 . 15 . 240</div>
+  <div class="warn">C 类主机号全 1（如 192.0.0.255）= 广播地址，不能分配给主机</div>
+</div>`},
+
+{id:'trap',label:'易错点',html:`
+<div class="card">
+  <h2>第4章易错速记</h2>
+  <table>
+    <tr><th>考点</th><th>正确</th><th>错误</th></tr>
+    <tr><td>路由器转发依据</td><td><b>目的IP + 路由表</b></td><td>源IP / 目的MAC</td></tr>
+    <tr><td>协议字段</td><td>上层协议(TCP=6)</td><td>IP版本(在版本字段)</td></tr>
+    <tr><td>ARP触发</td><td><b>发送时</b>无目的MAC映射</td><td>接收时</td></tr>
+    <tr><td>IP/MAC变化</td><td>IP不变，MAC逐段变</td><td>IP也逐段变</td></tr>
+    <tr><td>分片相关字段</td><td>标识、标志、片偏移</td><td>协议字段</td></tr>
+    <tr><td>RIP距离16</td><td>不可达</td><td>经过16次转发</td></tr>
+    <tr><td>IPv4耗尽治本</td><td><b>IPv6</b></td><td>NAT/CIDR(过渡)</td></tr>
+    <tr><td>内网上网</td><td><b>NAT</b></td><td>DNS/DHCP</td></tr>
+    <tr><td>网际层四协议</td><td>IP,ICMP,ARP,RARP</td><td>含TCP/UDP</td></tr>
+  </table>
+</div>
+<div class="card">
+  <h2>掩码 ↔ 前缀 速查</h2>
+  <div class="quick">
+    <div class="qi"><div class="n">/24</div><div class="l">255.255.255.0</div></div>
+    <div class="qi"><div class="n">/25</div><div class="l">255.255.255.128</div></div>
+    <div class="qi"><div class="n">/26</div><div class="l">255.255.255.192</div></div>
+    <div class="qi"><div class="n">/27</div><div class="l">255.255.255.224</div></div>
+    <div class="qi"><div class="n">/28</div><div class="l">255.255.255.240</div></div>
+    <div class="qi"><div class="n">/20</div><div class="l">255.255.240.0</div></div>
+    <div class="qi"><div class="n">/22</div><div class="l">255.255.252.0</div></div>
+    <div class="qi"><div class="n">/18</div><div class="l">255.255.192.0</div></div>
+  </div>
+</div>`},
+];
+
+let cur='subnet';
+function render(){
+  document.getElementById('tabs').innerHTML=SECTIONS.map(s=>
+    `<button class="tab${s.id===cur?' active':''}" onclick="go('${s.id}')">${s.label}</button>`
+  ).join('');
+  const sec=SECTIONS.find(s=>s.id===cur);
+  document.getElementById('content').innerHTML=`<div class="section active">${sec.html}</div>`;
+}
+function go(id){cur=id;render();window.scrollTo({top:0,behavior:'smooth'});}
+render();
+</script>
+</body>
+</html>

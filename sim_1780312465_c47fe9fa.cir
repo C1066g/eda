@@ -1,0 +1,75 @@
+* Audio Limiter / Compressor
+* Threshold: When audio peak > 0.5V, attenuation kicks in
+* Gain reduction: up to -20dB at max compression
+*
+* Topology:
+*   INPUT → Buffer → [R_fix + JFET_shunt] → Output Buffer
+*   Side-chain: Output → Precision Rectifier → Peak Detector → Error Amp → JFET Gate
+
+* ==================== SIGNAL SOURCE ====================
+* 1kHz sine, 1V peak (line level)
+Vin in 0 SIN(0 1.0 1k)
+
+* ==================== SIGNAL PATH ====================
+* Input buffer (voltage follower, gain=1)
+Ebuf1 sig_in 0 in 0 1
+
+* Attenuator: series resistor + controlled shunt to ground
+* R_fix = 1k, shunt = JFET acting as voltage-controlled resistor
+* When JFET off (Vgs=0): shunt ≈ 10kΩ, attenuation ≈ 10k/(1k+10k) = 0.91 (minimal)
+* When JFET on (Vgs=-1V): shunt ≈ 100Ω, attenuation ≈ 100/(1k+100) = 0.09 (-21dB)
+R_fix sig_in att_out 1k
+
+* JFET as voltage-controlled resistor (shunt to ground)
+* JFET drain = att_out, source = GND
+* Gate voltage controls channel resistance
+J1 att_out 0 gate 0 NJFET_VCR
+
+* Output buffer
+Ebuf2 out 0 att_out 0 1
+
+* ==================== SIDE-CHAIN ====================
+* Gain stage to bring signal to usable level for rectifier
+* Side-chain sees the attenuated output (feedback)
+Esc sc_in 0 out 0 1
+
+* Precision half-wave rectifier using op-amp + diode
+* Eliminates diode forward voltage drop
+* Op-amp model: high-gain VCVS
+Erect rect_out 0 VALUE = { V(sc_in) > 0 ? V(sc_in) : 0 }
+
+* Peak detector with attack/release time constants
+* Attack: R_att * C_peak ≈ 1ms (fast response)
+* Release: R_rel * C_peak ≈ 100ms (smooth recovery)
+D_peak rect_out peak_in IDEAL
+R_att peak_in peak 470
+C_peak peak 0 2.2u
+R_rel peak 0 47k
+
+* Error amplifier: compares peak to threshold
+* When peak > Vth: generates control voltage
+* Vth = 0.5V peak threshold
+* Error gain = 5
+Eerr ctrl 0 VALUE = { 5 * LIMIT(0, V(peak) - 0.5, 1) }
+
+* Gate drive low-pass filter (prevents distortion)
+R_gate ctrl gate 10k
+C_gate gate 0 1u
+
+* ==================== MODELS ====================
+* Ideal diode for peak detector (negligible Vf)
+.model IDEAL D(Is=1e-14 N=0.01 Rs=1m)
+
+* JFET model for voltage-controlled resistor
+* VTO = -2V (pinch-off), BETA = 1m (on resistance ~100Ω at Vgs=0)
+.model NJFET_VCR NJF(VTO=-2 BETA=1m LAMBDA=0 RD=10 RS=10)
+
+* ==================== ANALYSIS ====================
+* 50ms transient to show limiting in action
+.tran 0.01m 50m
+
+.control
+run
+.endc
+
+.end

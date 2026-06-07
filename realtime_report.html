@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>实时监控看板</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a1a;color:#e0e0e0}
+.wrap{max-width:960px;margin:0 auto;padding:14px}
+
+.head{background:linear-gradient(135deg,#0d0d2b,#1a1a4e);border-radius:14px;padding:20px 24px;margin-bottom:14px;border:1px solid rgba(100,100,255,.15)}
+.head h1{margin:0;font-size:18px;color:#fff;display:flex;align-items:center;gap:8px}
+.head .meta{font-size:11px;color:#666;margin-top:4px;display:flex;justify-content:space-between}
+.status-bar{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.dot.green{background:#27ae60;animation:pulse 2s infinite}
+.dot.red{background:#e74c3c;animation:pulse 1s infinite}
+.dot.yellow{background:#f39c12}
+@keyframes pulse{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
+
+.row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.card{background:#13132b;border-radius:12px;padding:14px 8px;text-align:center;border:1px solid rgba(100,100,255,.08)}
+.num{font-size:22px;font-weight:700;color:#8ab4ff}
+.lbl{font-size:10px;color:#666;margin-top:2px}
+
+.section{margin-bottom:14px}
+.section-header{font-size:13px;font-weight:600;color:#8ab4ff;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+
+.breaking-item{background:linear-gradient(135deg,#2a0a0a,#1a0a0a);border:1px solid rgba(255,50,50,.2);border-radius:10px;padding:12px 14px;margin-bottom:6px;border-left:3px solid #e74c3c}
+.watch-item{background:#13132b;border-radius:10px;padding:12px 14px;margin-bottom:6px;border-left:3px solid #f39c12;border:1px solid rgba(100,100,255,.06)}
+
+.item-hdr{display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap}
+.src{font-size:9px;padding:1px 7px;border-radius:3px;font-weight:600}
+.score{font-size:10px;font-weight:700}
+.item-title{font-size:13px;line-height:1.5;margin-bottom:3px;color:#eee}
+.item-meta{font-size:11px;color:#888;display:flex;gap:8px;flex-wrap:wrap}
+.ttag{display:inline-block;background:rgba(100,100,255,.12);color:#8ab4ff;border-radius:3px;padding:0 6px;font-size:9px}
+.empty{padding:40px;text-align:center;color:#444}
+
+.footer{text-align:center;padding:16px;color:#333;font-size:10px}
+</style>
+</head>
+<body>
+<div class=wrap>
+<div class=head>
+<h1>🚨 实时监控 <span style="font-size:11px;color:#666;font-weight:400">| 30s 刷新</span></h1>
+<div class=meta>
+<span>13:04:33</span>
+<span>
+循环: <span class="dot green"></span>30s/5min
+| 分析: 0条 | 🚨0 🔍0
+</span>
+</div>
+</div>
+
+<div class=row>
+<div class=card><div class=num style=color:#e74c3c>0</div><div class=lbl>重大突发</div></div>
+<div class=card><div class=num style=color:#f39c12>0</div><div class=lbl>重点跟踪</div></div>
+<div class=card><div class=num style=color:#8ab4ff>0</div><div class=lbl>累计分析</div></div>
+<div class=card><div class=num style=color:#27ae60>0</div><div class=lbl>抓取消息</div></div>
+<div class=card><div class=num style=color:#888}>7m</div><div class=lbl>已运行</div></div>
+</div>
+
+<div class=section>
+<div class=section-header><span class="dot red"></span> 重大突发 (edge_score >= 80)</div>
+<div class="empty">暂无重大突发信号</div>
+</div>
+
+<div class=section>
+<div class=section-header><span class="dot yellow"></span> 重点跟踪 (edge_score >= 60)</div>
+<div class="empty">暂无重点跟踪信号</div>
+</div>
+
+<div class=footer>数据: 东方快讯/新浪/雅虎/价格监控/北向/成交量 &nbsp;|&nbsp; AI: DeepSeek</div>
+</div>
+</body>
+</html>

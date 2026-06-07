@@ -1,0 +1,46 @@
+* Audio Limiter v5 - Aggressive Limiting
+*
+* To demonstrate clear limiting: ramp input amplitude
+* and show output clamps at threshold
+
+* Input with rising amplitude: 0.1V → 1.5V over 50ms
+Vin in 0 SIN(0 {0.1 + time*28} 1k)
+
+* ---- Signal Path ----
+Ebuf sig_in 0 in 0 1
+
+* Voltage-Controlled Attenuator
+* Shunt resistance controlled by ctrl voltage [0, 1]
+Rfix sig_in att_out 1k
+Gshunt att_out 0 VALUE = { V(att_out) / (10 + 200000 * pow(MAX(0.001, 1-V(ctrl)), 3)) }
+
+Eout out 0 att_out 0 1
+
+* ---- RMS Envelope Detector ----
+Bpwr sqr 0 V = V(out) * V(out)
+
+Datt sqr env_in IDEAL
+R_att env_in env 100
+Cenv env 0 22u
+R_rel env 0 100k
+
+Bamp amp 0 V = SQRT(V(env))
+
+* ---- Error Amplifier ----
+* Higher gain = more aggressive limiting
+Eerr err 0 VALUE = { LIMIT(0, 8 * (V(amp) - 0.35), 1) }
+
+* ---- Control Filter ----
+R_ctrl err ctrl 1k
+C_ctrl ctrl 0 1u
+
+* ---- Models ----
+.model IDEAL D(Is=1e-14 N=0.01 Rs=1m)
+
+.tran 0.02m 50m
+
+.control
+run
+.endc
+
+.end

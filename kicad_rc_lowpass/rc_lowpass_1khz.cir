@@ -1,0 +1,19 @@
+* 1 kHz 一阶 RC 低通 — AC 分析
+* fc = 1/(2*pi*R*C), R=1.6k C=100n -> fc ~ 995 Hz (E24)
+.title RC Lowpass 1kHz
+
+Vin in 0 DC 0 AC 1
+R1 in out 1.6k
+C1 out 0 100n
+
+.ac dec 100 10 100k
+.control
+run
+let g0 = vdb(out)[0]
+meas ac f_3db when vdb(out)=g0-3 cross=1
+echo DC_gain_dB= $&g0
+echo f_minus3dB_Hz= $&f_3db
+print f_3db
+wrdata rc_lowpass_ac.dat frequency vdb(out) vp(out)
+.endc
+.end

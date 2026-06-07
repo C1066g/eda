@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通信网络技术 · 快速复习</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#090b12;--surface:#131620;--text:#e2e4ed;--text2:#888ca0;--text3:#555a70;
+  --accent:#7b93f5;--green:#6ee7a5;--red:#f07b8a;--amber:#f5c842;
+  --radius:10px;--ease:cubic-bezier(0.22,0.61,0.36,1);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;padding:20px;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 600px 400px at 20% 10%,rgba(123,147,245,0.04),transparent),
+             radial-gradient(ellipse 500px 400px at 80% 90%,rgba(110,231,165,0.03),transparent);
+  pointer-events:none;z-index:0;
+}
+.app{max-width:820px;margin:0 auto;position:relative;z-index:1}
+
+.topbar{
+  position:sticky;top:0;z-index:10;background:rgba(9,11,18,0.88);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 0;margin-bottom:18px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+.topbar h1{font-size:1.1rem;font-weight:700;background:linear-gradient(135deg,#c8d2f8,#a0b0f0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topbar .info{font-size:0.73rem;color:var(--text3)}
+
+.filters{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.fbtn{
+  padding:5px 12px;border-radius:18px;border:1px solid rgba(255,255,255,0.05);
+  background:rgba(255,255,255,0.02);color:var(--text2);font-size:0.72rem;
+  cursor:pointer;transition:all 0.25s var(--ease);font-family:inherit;white-space:nowrap;
+}
+.fbtn:hover{border-color:rgba(255,255,255,0.12);color:var(--text)}
+.fbtn.active{background:rgba(123,147,245,0.1);color:var(--accent);border-color:rgba(123,147,245,0.2)}
+
+.chapter-title{
+  font-size:1rem;font-weight:700;color:var(--accent);margin:22px 0 12px;
+  padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.section-title{font-size:0.85rem;font-weight:600;color:var(--text2);margin:16px 0 8px}
+
+.item{
+  background:var(--surface);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius);
+  padding:16px 18px;margin-bottom:10px;transition:border-color 0.2s var(--ease);
+}
+.item:hover{border-color:rgba(255,255,255,0.1)}
+.item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.item-num{font-size:0.73rem;font-weight:600;color:var(--accent);white-space:nowrap;min-width:30px}
+.item-type{font-size:0.65rem;color:var(--text3);padding:2px 8px;border-radius:6px;background:rgba(255,255,255,0.03);white-space:nowrap}
+.item-q{font-size:0.88rem;line-height:1.55;color:#dde0ef;margin-bottom:10px}
+.item-a{
+  font-size:0.84rem;line-height:1.5;padding:10px 14px;border-radius:8px;
+  background:rgba(110,231,165,0.06);color:var(--green);
+  border-left:2px solid rgba(110,231,165,0.3);
+}
+.item-a b{color:#fff}
+.item-formula{
+  font-size:0.78rem;line-height:1.5;margin-top:8px;padding:8px 12px;border-radius:8px;
+  background:rgba(123,147,245,0.06);color:var(--accent);
+  border-left:2px solid rgba(123,147,245,0.25);
+}
+
+/* Formula highlight */
+.formula{font-family:"SF Mono","JetBrains Mono","Menlo",monospace;background:rgba(123,147,245,0.1);padding:1px 6px;border-radius:3px;font-size:0.85em}
+
+.toc{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.toc a{color:var(--text2);font-size:0.73rem;text-decoration:none;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,0.02);transition:all 0.2s var(--ease)}
+.toc a:hover{color:var(--accent);background:rgba(123,147,245,0.08)}
+
+.nav-home{display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--text2);text-decoration:none;margin-bottom:10px;padding:4px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02)}
+.nav-home:hover{color:var(--accent)}
+@media(max-width:600px){
+  body{padding:10px}
+  .item{padding:12px 14px}
+  .item-q{font-size:0.84rem}
+  .item-a{font-size:0.8rem}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+const data={};
+
+function sec(ch,title,items){if(!data[ch])data[ch]={title,items:[]};data[ch].items.push({section:title,items});}
+
+// ====== Chapter 1: 网络概论 ======
+const ch1=[
+  {q:"长度10^8bit，带宽1Mbps，发送时延？光纤1000km(2×10^8m/s)，传播时延？",a:"<b>发送=100s</b>，<b>传播=5ms</b>",f:"<span class=formula>T发=L/R</span>，<span class=formula>T传=d/v</span>"},
+  {q:"点对点50km(2×10^8m/s)，带宽？使传播时延=发送100B分组的发送时延。512B呢？",a:"100B：<b>3.2Mbps</b>；512B：<b>16.384Mbps</b>",f:"<span class=formula>Tp=d/v=2.5×10⁻⁴s</span>，<span class=formula>B=L/Tp</span>"},
+  {q:"数据10^7bit/100kbps时发送+传播？10^3bit/1Gbps时？(1000km,2×10^8m/s)",a:"前者：<b>发送100s，传播5ms</b>；后者：<b>发送1μs，传播5ms</b>",f:"传播时延与数据量无关，只取决于距离和传播速度"},
+  {q:"速率单位k/M/G/T的数值？数据量单位K/M/G/T的数值？",a:"速率：<b>10³/10⁶/10⁹/10¹²</b>；数据量：<b>2¹⁰/2²⁰/2³⁰/2⁴⁰</b>",f:"⚠️ 速率用10的幂，存储用2的幂。1KB=1024B，1kbps=1000bps"},
+  {q:"网络分层原则正确的是？",a:"<b>每层的功能应明确</b>",f:"层数要适量；功能不应重复；接口信息量应尽量少"},
+  {q:"数据从高层→低层，首部被逐层___？",a:"<b>加上</b>（封装）",f:"自上而下=封装加首部；自下而上=解封去首部"},
+  {q:"OSI中自上而下第一个提供端到端服务的是？",a:"<b>传输层</b>",f:"物理层+链路层=点到点；网络层=主机到主机(不可靠)；传输层=端到端(进程到进程)"},
+  {q:"链路100Mbps，A网卡1Gbps，B网卡10Mbps，A→B最高速率？",a:"<b>10Mbps</b>",f:"<span class=formula>发送速率=min(发送速率,链路带宽,接收速率)</span>——木桶效应"},
+  {q:"广域网/城域网/局域网划分依据？",a:"<b>网络的作用范围</b>",f:"WAN>MAN>LAN。拓扑/通信方式/传输介质都不是划分依据"},
+  {q:"第N层向第N+1层提供服务和协议。",a:"<b>错</b>——只提供服务，不是协议",f:"协议是层内对等实体间的规则；服务是层间接口"},
+  {q:"网络利用率越高越好？",a:"<b>错</b>——利用率高→排队时延急剧增加",f:"排队论：利用率趋近1时，时延趋近无穷"},
+  {q:"TCP/IP自下而上第二层是？",a:"<b>网络层/网际层</b>",f:"TCP/IP四层：网络接口层→网际层(IP)→运输层(TCP/UDP)→应用层"},
+];
+sec("ch1","第1章 · 网络概论",ch1);
+
+// ====== Chapter 2: 物理层 ======
+const ch2=[
+  {q:"不属于物理层接口规范定义范畴？",a:"<b>物理地址</b>(MAC是链路层)",f:"物理层4特性：机械(形状尺寸)、电气(电压范围)、功能(电平含义)、规程(事件顺序)"},
+  {q:"物理层的主要功能？",a:"<b>透明地传输原始比特流</b>",f:"不管内容含义，只传比特。可靠传输/路由/端到端服务在更高层"},
+  {q:"对讲机/半双工通信方式？",a:"<b>半双工</b>(双向交替，不能同时)",f:"单工=单向；半双工=双向交替(对讲机)；全双工=双向同时(电话)"},
+  {q:"描述事件发生顺序的接口特性？",a:"<b>规程特性(过程特性)</b>",f:"机械=形状尺寸；电气=电压范围；功能=电平含义；规程=事件顺序"},
+  {q:"曼彻斯特编码的特点？",a:"<b>将时钟与数据取值都包含在信号中</b>",f:"每个码元中间都有跳变"},
+  {q:"差分曼彻斯特编码规则？",a:"<b>位边界有跳变=0，无跳变=1</b>",f:"作业波形题答案：<b>1011 1001</b>"},
+  {q:"影响信道最大传输速率的主要因素？",a:"<b>信道带宽和信噪比</b>",f:"<span class=formula>C=W·log₂(1+S/N)</span> 香农公式"},
+  {q:"抗电磁干扰性最好的传输介质？",a:"<b>光缆</b>",f:"光纤用光信号，不受电磁干扰"},
+  {q:"双绞线绞合的主要目的？",a:"<b>减少干扰</b>",f:"两根线产生的电磁干扰相互抵消"},
+  {q:"带宽4kHz，信噪比30dB，最大传输速率？",a:"<b>40kbps</b>",f:"30dB→S/N=1000；<span class=formula>C=4000×log₂(1+1000)≈4000×10=40k</span>"},
+  {q:"32相调制，波特率1200，比特率？",a:"<b>6000 b/s</b>",f:"<span class=formula>S=B·log₂V</span>=1200×log₂32=1200×5=6000"},
+  {q:"+10~+15V表0，-10~-15V表1，线长≤15m，体现什么特性？",a:"<b>电气特性</b>",f:"电压范围→电气；电平含义→功能；事件顺序→规程；形状尺寸→机械"},
+  {q:"光纤网中多路复用技术？",a:"<b>波分复用(WDM)</b>",f:"电→频分/时分；光→波分"},
+  {q:"电缆屏蔽的好处？",a:"<b>减少电磁干扰辐射</b>",f:""},
+  {q:"数字基带信号通过什么在模拟信道传输？",a:"<b>调制</b>",f:"调制=数字→模拟；解调=模拟→数字"},
+];
+sec("ch2","第2章 · 物理层",ch2);
+
+// ====== Chapter 3: 数据链路层 ======
+const ch3=[
+  {q:"CRC：生成多项式G(x)=11011，除数为？",a:"<b>11011</b>",f:"生成多项式系数直接作为除数。G(x)=x⁴+x³+x+1→11011"},
+  {q:"CRC：数据101110，G(x)=X³+1，余数？",a:"<b>011</b>",f:"除数=1001(G(x)系数)。数据后加3个0(<span class=formula>G(x)最高次=r→加r个0</span>)→101110000，模2除法→余011"},
+  {q:"奇偶校验码特征？",a:"<b>只能检查出奇数个比特误码</b>",f:"奇数误码→1数量的奇偶性改变→可检出。偶数→不变→检不出。CRC漏检率远低于奇偶校验"},
+  {q:"交换机转发表为空，收到单播帧后？",a:"<b>泛洪</b>(广播到除入口外的所有端口)",f:"表空→不知道目的MAC在哪→泛洪学习。收到回复后记录(源MAC→端口)到转发表"},
+  {q:"交换机转发表空，B→C数据帧后C→B确认帧，转发端口？",a:"数据帧<b>{1,3}</b>(泛洪)；确认帧<b>{2}</b>(定向)",f:"B→C：表空泛洪除入口外所有端口。C→B：已学到B在端口1→定向转发"},
+  {q:"数据链路层互连设备？",a:"<b>网桥和交换机</b>",f:"路由器=网络层；集线器=物理层；网关=高层"},
+  {q:"所有计算机连一条线路，两端有防反射装置？",a:"<b>总线结构</b>",f:"总线：共享线路+两端终结器防反射"},
+  {q:"交换机100Mb/s×10用户，每用户带宽？",a:"<b>100Mb/s</b>",f:"交换机每个端口<b>独占</b>带宽。集线器<b>共享</b>带宽(10用户÷10Mb/s=2Mb/s每用户)"},
+  {q:"VLAN描述错误的是？",a:"<b>802.1Q帧最大长度1518B</b>(应为<b>1522B</b>)",f:"802.1Q加了4B VLAN标签→最大1522B。同VLAN可跨交换机；不同VLAN链路层隔离"},
+  {q:"数据链路层传输单位？",a:"<b>帧</b>",f:"物理层=比特流；链路层=帧；网络层=数据报/分组；运输层=报文段"},
+  {q:"CSMA/CD：1000Mb/s，最小帧256B，单向传播延时最多？",a:"<b>1.024μs</b>",f:"<span class=formula>最小帧长=带宽×RTT</span>。256×8=1000×10⁶×2τ→τ=1.024μs"},
+  {q:"1000Base-T中1000的含义？",a:"<b>传输带宽1000Mb/s</b>",f:"1000=速率；Base=基带传输；T=双绞线"},
+  {q:"面向比特的透明传输：FLAG=01111110，A=01000111 B=11100011 ESC=11100000，传A,B,ESC,FLAG的二进制序列？",a:"<b>01111110 01000111 110100011 111000000 011111010 01111110</b>",f:"面向比特=<b>零比特填充法</b>：数据部分每5个连续1后插入一个0。B(11100011)→111000011→数据中5个1后插0→110100011"},
+  {q:"交换机vs集线器：冲突域和广播域？",a:"交换机：<b>隔离冲突域，不隔离广播域</b>",f:"集线器→同冲突域+同广播域。交换机→分冲突域+同广播域。路由器→两者都隔离"},
+  {q:"以太网退避算法：11次碰撞后随机范围0~x，x=？",a:"<b>1023</b>",f:"<span class=formula>k=min(碰撞次数,10)</span>, <span class=formula>x=2^k-1</span>。11次碰撞→k=min(11,10)=10→x=2¹⁰-1=1023"},
+  {q:"交换机交换表填空：A→D(状态？转发？)→D→A→E→A→A→E",a:"①写入(A,1)→泛洪2-6；②写入(D,4)→转发1；③写入(E,5)→转发1；④不变→转发5",f:"自学习：收到帧→记录(源MAC,入口)→查表转发。已知目的→定向；未知→泛洪"},
+  {q:"CSMA/CD的最短帧长？",a:"<b>64字节</b>",f:"经典值。"},
+  {q:"CSMA/CD工作原理？",a:"<b>先听后发，边发边听，冲突停发，随机重发</b>",f:"①准备→检测信道 ②空闲(96bit时间)→发送 ③碰撞→停发+干扰信号+指数退避(等r×512bit时间) ④重传超16次→报错"},
+  {q:"10km/10Mbps/200m/μs CSMA/CD最小帧长？",a:"<b>1000bit</b>",f:"争用期=2×(10000/200)=100μs。最小帧长=10×10⁶×100×10⁻⁶=1000bit"},
+];
+sec("ch3","第3章 · 数据链路层",ch3);
+
+// ====== Chapter 4: 网络层 ======
+const ch4=[
+  {q:"路由器转发IP数据报依据？",a:"<b>目的IP地址+路由表</b>",f:"⚠️路由器查目的IP不查MAC。MAC是链路层逐段改变的"},
+  {q:"IPv4首部中与分片无关的字段？",a:"<b>协议</b>",f:"分片相关：标识(同数据报)、标志(DF=不分片,MF=还有片)、片偏移(8字节单位)"},
+  {q:"协议字段=IP版本(值为4=IPv4)？",a:"<b>错</b>——协议字段=上层协议(TCP=6,UDP=17)，<b>版本字段</b>才是IP版本",f:""},
+  {q:"RIP距离值16的含义？",a:"<b>该网络不可达</b>",f:"RIP最大跳数15，16=不可达"},
+  {q:"RIP：X告诉K距离Y为N(N<15)，K选X做下一跳到Y的距离？",a:"<b>N+1</b>",f:"RIP收到邻居通告→把自己到邻居的距离(1)+邻居到目标的距离(N)=自己到目标的距离"},
+  {q:"11000000 11111110 00001111 11110000→点分十进制？",a:"<b>192.254.15.240</b>",f:"每8位一组转十进制"},
+  {q:"C类但不能分配给主机的IP？",a:"<b>192.0.0.255</b>(主机号全1=广播)",f:"网络地址(主机号全0)和广播地址(主机号全1)不能分配给主机"},
+  {q:"166.66.66.66/255.255.192.0的子网广播地址？",a:"<b>166.66.127.255</b>",f:"/18→后14位全1。166.66.01000000→广播=166.66.01111111.11111111"},
+  {q:"10.0.0.0/10最后一个地址？",a:"<b>10.63.255.255</b>",f:"/10→后22位全1→10.00111111.255.255=10.63.255.255"},
+  {q:"路由聚合212.56.132~135.0/24→？",a:"<b>212.56.132.0/22</b>",f:"132=10000100, 135=10000111→前22位相同→/22"},
+  {q:"4500B TCP段(IPv4固定首部20B)，以太网传输，拆几个IP片？",a:"<b>4片</b>",f:"MTU=1500B，每片数据≤1480B(1500-20)。总长4500+20=4520→⌈4520/1480⌉=4片"},
+  {q:"解决IPv4耗尽，治本措施？",a:"<b>采用IPv6</b>",f:"CIDR/NAT都是过渡方案，IPv6=128位地址→根本解决"},
+  {q:"需要发送ARP请求的情况？",a:"<b>需发送数据但ARP表无目的IP的MAC映射</b>",f:"⚠️发送时才查ARP，接收不需要"},
+  {q:"IP分组传输中(不考虑NAT)源/目的IP变化？",a:"<b>源IP和目的IP都不变</b>",f:"⚠️不考NAT→IP全程不变。只有MAC地址逐段改变！"},
+  {q:"RIP网络中TTL=64经3个路由器后？",a:"<b>61</b>(64-3)",f:"每过一个路由器TTL减1"},
+  {q:"192.168.16.0/25均分两子网，销售广播和技术网络地址？",a:"销售广播<b>192.168.16.63</b>，技术网络<b>192.168.16.64</b>",f:"均分→/26。子网0(0~63=广播63)，子网1(64~127=网络64)"},
+  {q:"RIP路由更新：A[N1 4 B, N2 2 C, N3 1 F, N4 5 G]，收C[N1 2, N2 1, N3 3, N4 7]，更新后？",a:"N1→(3,C)；N2→(2,C)；N3→(1,F)不变；N4→(5,G)不变",f:"收到距离+1和自己原距离比，取小。N3:3+1=4>1→不更新。N4:7+1=8>5→不更新"},
+  {q:"136.23.12.64/26划4个子网：前缀？每子网地址数？第四个网络地址？",a:"<b>/28</b>(26+2)，<b>16个</b>地址，<b>136.23.12.112/28</b>",f:"<span class=formula>借n位→子网数=2^n</span>。4个子网→借2位→/28。地址数=2^(32-28)=16"},
+  {q:"CIDR：甲2000IP(起202.0.0.0)，乙4000IP(起202.0.16.0)，丙/丁各1000IP(起202.0.8.0/202.0.12.0)",a:"甲<b>/21</b>(202.0.0~7.255)；乙<b>/20</b>(~31.255)；丙<b>/22</b>(~11.255)；丁<b>/22</b>(~15.255)",f:"2000→需2048→/21；4000→需4096→/20；1000→需1024→/22"},
+  {q:"3820B IP包，MTU=1420B(固定首部20B)，分片：编号范围/片偏移/DF/MF？",a:"①0-1399/0/0/1 ②1400-2799/175/0/1 ③2800-3799/350/0/0",f:"每片数据≤1400B(1420-20)。片偏移=数据起始字节/8。<span class=formula>MF=1还有后续，MF=0最后一片</span>"},
+];
+sec("ch4","第4章 · 网络层 — IP地址/子网划分/CIDR/RIP/ARP",ch4);
+
+// ====== Chapter 5: 运输层 ======
+const ch5=[
+  {q:"TCP三次握手：第一次SYN/ACK值？",a:"第一次<b>SYN=1, ACK=0</b>；第二次<b>SYN=1, ACK=1</b>；第三次<b>SYN=0, ACK=1</b>",f:"第一次=请求(SYN)；第二次=确认+请求(SYN+ACK)；第三次=确认(ACK)。ack=对方seq+1"},
+  {q:"甲(SYN=1,seq=100)→乙，乙接受？",a:"<b>(SYN=1, ACK=1, seq=123, ack=101)</b>",f:"第二次：SYN=1,ACK=1,ack=甲seq+1=101,乙seq任意"},
+  {q:"甲seq=2020,乙seq=1666，第三次握手确认序号？",a:"<b>1667</b>",f:"第三次ack=乙seq+1=1667"},
+  {q:"握手最后报文无数据，建连后第一个数据序号？",a:"<b>201</b>",f:"初始seq=200→第三次握手seq=200+1(SYN消耗1序号)=201→数据从201开始"},
+  {q:"TCP首部最大长度？",a:"<b>60字节</b>",f:"固定20B+选项最大40B=60B。UDP首部固定8B"},
+  {q:"TCP有而UDP没有的字段？",a:"<b>序号</b>",f:"UDP首部：源端口+目的端口+长度+校验和(8B)。TCP多了序号/确认号/窗口/标志位等"},
+  {q:"运输层端口范围？熟知端口范围？",a:"<b>0~65535</b>；熟知端口<b>0~1023</b>",f:"16位端口号。HTTP=80,DNS=53,FTP=21/20,SMTP=25,POP3=110,DHCP=67/68"},
+  {q:"TCP窗口字段含义？",a:"<b>指明自己的接收窗口尺寸(rwnd)</b>",f:"窗口=我还能收多少→流量控制"},
+  {q:"TCP发送窗口大小取决于？",a:"<b>min(接收窗口, 拥塞窗口)</b>",f:"<span class=formula>发送窗口=min(rwnd, cwnd)</span>"},
+  {q:"TCP序号字段含义？",a:"<b>数据载荷第一个字节的序号</b>",f:"确认号=期望收到的下一字节序号(即已收到确认号-1及之前所有字节)"},
+  {q:"A收到确认号=100表示？",a:"<b>已收到最后一字节序号为99的段</b>",f:"ack=N→序号N-1及之前数据全部已收到(累积确认)"},
+  {q:"FIN=1表示？",a:"<b>本方无数据发送，但可接收对方数据</b>",f:"FIN=单方向释放连接，不是断开双方。需要双方都发FIN才完全关闭"},
+  {q:"拥塞控制：cwnd何时线性增长？",a:"<b>cwnd≥ssthresh(拥塞门槛)</b>",f:"cwnd<ssthresh→慢开始(指数增长)；cwnd≥ssthresh→拥塞避免(每RTT+1MSS线性增长)。超时→ssthresh=cwnd/2,cwnd=1"},
+  {q:"cwnd从8KB→11KB(RTT=1ms,MSS=1KB)最长时间？",a:"<b>3ms</b>",f:"拥塞避免阶段：8→9→10→11，3个RTT=3ms"},
+  {q:"超时时cwnd=16KB,10RTT后发送窗口？(接收窗口=10KB)",a:"<b>10KB</b>",f:"超时→cwnd=1, ssthresh=8。慢开始至8后拥塞避免。受接收窗口10KB限制→最终10KB"},
+  {q:"TCP超时重传时间RTO？",a:"<b>RTO应略大于加权平均往返时间RTTs</b>",f:"太小→不必要重传；太大→响应慢"},
+  {q:"UDP特点？",a:"<b>无连接、不可靠、有复用/分用</b>，是<b>运输层</b>(非网际层)",f:"UDP不保证可靠传输，不提供拥塞控制。DNS(53)、DHCP(67/68)使用UDP"},
+  {q:"GBN发送0~6，收到1,2,4确认，超时重传几个？",a:"<b>2个</b>(5和6)",f:"GBN累积确认：收到ack4→0~4全收到→重传未确认的5和6"},
+  {q:"停等协议死锁解决？",a:"<b>超时重传</b>",f:"数据丢失→收不到ACK→发送方一直等→超时触发重传"},
+  {q:"停等协议6kbps,时延100ms,利用率40%→分组长度？",a:"<b>800比特</b>",f:"<span class=formula>利用率=(L/R)/(L/R+2τ)</span>=0.4→L=800bit"},
+  {q:"序号1024,确认号2048,载荷200B→甲回复的seq和ack？",a:"<b>seq=2048, ack=1224</b>",f:"甲seq=对方ack=2048；甲ack=对方seq+载荷=1024+200=1224"},
+  {q:"3个段(200/300/400B)，第3段seq=1000，仅收1和3，确认号？",a:"<b>500</b>",f:"seq1=1000-400-300=300+200=500；seq2=500+300=800。仅正确收seq1→期望ack=500"},
+  {q:"不属于TCP特点？",a:"<b>支持广播</b>",f:"TCP是点对点、全双工、可靠、面向字节流。不支持广播/多播"},
+  {q:"实现进程间网络通信的层？",a:"<b>运输层</b>",f:"运输层=进程到进程(端口)；网络层=主机到主机(IP)"},
+];
+sec("ch5","第5章 · 运输层 — TCP/UDP/三次握手/拥塞控制/GBN",ch5);
+
+// ====== Chapter 6: 应用层 ======
+const ch6=[
+  {q:"域名→IP由什么服务器完成？",a:"<b>DNS</b>",f:"DNS=Domain Name System。端口53，基于UDP"},
+  {q:"DNS递归查询中最终返回IP的服务器？",a:"<b>最开始连接的服务器</b>",f:"递归=本地DNS替你一条龙查到底→原路返回结果。迭代=本地DNS一步一步问"},
+  {q:"用户递归+本地DNS迭代，请求条数？",a:"用户<b>1条</b>，本地DNS<b>多条</b>",f:"用户只发1条递归请求给本地DNS；本地DNS向多个服务器迭代查询"},
+  {q:"HTTP无状态，识别用户用？",a:"<b>Cookie</b>",f:"Cookie在客户端存储用户标识，每次请求携带"},
+  {q:"DHCP DISCOVER源IP和目的IP？",a:"源<b>0.0.0.0</b>，目的<b>255.255.255.255</b>",f:"客户端尚无IP→全0；不知道DHCP服务器在哪→广播(全1)"},
+  {q:"DHCP的作用？",a:"<b>自动获取IP地址、默认网关等网络配置</b>",f:"DHCP=Dynamic Host Configuration Protocol。基于UDP，端口67(服务器)/68(客户端)"},
+  {q:"发送邮件用什么协议？接收呢？",a:"发送<b>SMTP</b>，接收<b>POP3/IMAP</b>",f:"SMTP=推(Push)，端口25/TCP。POP3=拉(Pull)，端口110/TCP。IMAP=在线管理，端口143/TCP"},
+  {q:"SMTP基于运输层什么服务？",a:"<b>有连接可靠(TCP)</b>",f:"⚠️ SMTP基于TCP！TCP是可靠有连接的。DNS/DHCP基于UDP"},
+  {q:"FTP控制连接端口？数据连接？",a:"控制<b>21</b>，数据<b>20</b>(服务器端)",f:"⚠️客户端控制连接用随机端口(非20)！FTP先建控制连接(21)再按需建数据连接"},
+  {q:"FTP传递数据用什么连接？",a:"<b>建立在TCP之上的数据连接</b>",f:"FTP数据连接也是TCP。控制连接持久，数据连接按需建立"},
+  {q:"访问Web不可能用到什么协议？",a:"<b>SMTP</b>",f:"Web用HTTP/TCP/IP/ARP等，SMTP是发邮件的"},
+  {q:"域名和什么一一对应？",a:"<b>以上都不是</b>",f:"⚠️域名可对应多IP(负载均衡)；同一个IP可托管多域名(虚拟主机)。不是一一对应！"},
+  {q:"不属于应用层？",a:"<b>UDP</b>(运输层)",f:"应用层：DNS/HTTP/DHCP/FTP/SMTP/POP3。UDP/TCP是运输层"},
+  {q:"SMTP/POP3分别基于运输层？",a:"<b>TCP, TCP</b>",f:"两个都基于TCP"},
+  {q:"DHCP用面向连接服务？",a:"<b>否</b>——DHCP基于<b>UDP</b>(无连接)",f:"HTTP/FTP/SMTP基于TCP；DNS(查询)/DHCP基于UDP"},
+];
+sec("ch6","第6章 · 应用层 — DNS/HTTP/FTP/SMTP/POP3/DHCP",ch6);
+
+// ====== Render ======
+const chs={all:"全部",ch1:"第1章·概论",ch2:"第2章·物理层",ch3:"第3章·链路层",ch4:"第4章·网络层",ch5:"第5章·运输层",ch6:"第6章·应用层"};
+let curCh="all";
+
+function render(){
+  let html='';
+  // TOC
+  html+=`<div class=toc>`;
+  for(const[k,v]of Object.entries(chs)){
+    html+=`<a href="#" onclick="filter('${k}');return false"${k===curCh?' style=color:var(--accent)':''}>${v}</a>`;
+  }
+  html+=`</div>`;
+
+  let total=0;
+  for(const[ch,chData]of Object.entries(data)){
+    if(curCh!=="all"&&ch!==curCh)continue;
+    html+=`<div class=chapter-title>📡 ${chData.title}</div>`;
+    for(const sec of chData.items){
+      html+=`<div class=section-title>${sec.section}</div>`;
+      for(let i=0;i<sec.items.length;i++){
+        total++;
+        const item=sec.items[i];
+        html+=`<div class=item>
+          <div class=item-head><span class=item-num>#${total}</span><span class=item-type>${ch}</span></div>
+          <div class=item-q>${item.q}</div>
+          <div class=item-a>${item.a}</div>
+          ${item.f?`<div class=item-formula>📐 ${item.f}</div>`:''}
+        </div>`;
+      }
+    }
+  }
+  document.getElementById("app").innerHTML=`
+    <a class=nav-home href="通信网络技术_考试中心.html">← 考试中心</a>
+    <div class=topbar><h1>通信网络技术 · 快速复习</h1><span class=info>共${total}条 · 含公式与解析</span></div>
+    <div class=filters>${Object.entries(chs).map(([k,v])=>`<button class="fbtn${curCh===k?' active':''}" onclick="filter('${k}')">${v}</button>`).join('')}</div>
+    ${html}`;
+}
+
+function filter(ch){curCh=ch;render();}
+render();
+</script>
+</body>
+</html>

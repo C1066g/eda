@@ -1,0 +1,60 @@
+* Audio Limiter / Compressor - Behavioral Model
+* 
+* Signal path: Input → Buffer → Voltage-Controlled Attenuator → Output
+* Side-chain: Output → Envelope Detector → Threshold Comparator → Control Voltage
+*
+* When envelope > threshold: attenuation increases
+* Attack time ~2ms, Release time ~100ms
+
+Vin in 0 SIN(0 1.0 1k)
+
+* ---- Signal Path ----
+Ebuf sig_in 0 in 0 1
+
+* Voltage-controlled attenuator using behavioral resistor
+* Vout = Vin * Rshunt / (Rfix + Rshunt)
+* Rshunt = Rmax when ctrl=0, Rshunt → Rmin when ctrl=1
+* Rmax = 100k (essentially no attenuation)
+* Rmin = 100 (maximum attenuation ≈ 100/(100+1000) = 0.09 = -21dB)
+Rfix sig_in att_out 1k
+Gshunt att_out 0 VALUE = { V(att_out) / (100 + 100000 * (1 - V(ctrl)) * (1 - V(ctrl))) }
+
+Eout out 0 att_out 0 1
+
+* ---- Side-Chain: Envelope Detector ----
+* RMS-based envelope (no diodes needed!)
+* Step 1: Square the signal
+Bpwr sqr 0 V = V(out) * V(out)
+
+* Step 2: Low-pass filter (envelope extraction)
+* Attack: R_attack charges C quickly via diode action (fast rising)
+* Release: R_release discharges C slowly
+Datt sqr env_in IDEAL
+R_att env_in env 100
+Cenv env 0 10u
+R_rel env 0 100k
+
+* Step 3: Square root to get linear envelope
+Bamp amp 0 V = SQRT(V(env))
+
+* ---- Threshold Comparator ----
+* Threshold = 0.5V (envelope)
+* When amp > 0.5: error = (amp - 0.5) * gain
+* Gain = 10 for aggressive limiting
+Eerr err 0 VALUE = { 10 * LIMIT(0, V(amp) - 0.5, 0.5) }
+
+* ---- Control Voltage Smoothing ----
+R_ctrl err ctrl 1k
+C_ctrl ctrl 0 2.2u
+
+* ---- Models ----
+.model IDEAL D(Is=1e-14 N=0.01 Rs=1m)
+
+* ---- Analysis ----
+.tran 0.01m 50m
+
+.control
+run
+.endc
+
+.end

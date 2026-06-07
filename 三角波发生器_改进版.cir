@@ -1,0 +1,65 @@
+* 改进的三角波发生器电路
+* 使用积分器和施密特触发器
+
+.title Improved Triangle Wave Generator
+
+* 电源
+VCC vcc 0 DC 12V
+VEE vee 0 DC -12V
+
+* 施密特触发器（比较器）- 产生方波
+* 使用 LM358 运放模型
+XU1 n_ref n_fb vcc vee square_out LM358
+R1 square_out n_fb 100k
+R2 n_fb 0 100k
+R3 0 n_ref 100k
+R4 n_ref vcc 100k
+
+* 积分器 - 将方波转换为三角波
+XU2 square_out 0 vcc vee tri_out LM358
+R5 square_out n_int 10k
+C1 n_int tri_out 100n
+R6 tri_out 0 1Meg
+
+* LM358 运放简化模型
+.subckt LM358 inp inn vcc vee out
+* 差分输入级
+Rin inp inn 2Meg
+* 增益级 (开环增益 100dB = 100000)
+Egain n1 0 inp inn 100k
+* 输出级 (包含压摆率限制)
+Rout n1 out 75
+Cout out 0 10p
+* 电源限制
+Dpos vcc out DCLAMP
+Dneg out vee DCLAMP
+.model DCLAMP D(Is=1e-14 Rs=1)
+* 电源电流
+Icc vcc 0 DC 1m
+Iee 0 vee DC 1m
+.ends
+
+* 初始条件
+.ic V(n_fb)=0.5V V(tri_out)=0V
+
+* 瞬态分析 - 运行 100ms 观察多个周期
+.tran 10u 100m 0 10u
+
+* 控制命令
+.control
+run
+set hcopydevtype=postscript
+* 绘制方波和三角波
+plot v(square_out) v(tri_out)
+* 测量频率
+meas tran t_rise TRIG v(tri_out) VAL=0 RISE=1 TARG v(tri_out) VAL=0 RISE=2
+let freq = 1/t_rise
+print freq
+* 测量幅度
+meas tran v_max MAX v(tri_out)
+meas tran v_min MIN v(tri_out)
+let amplitude = v_max - v_min
+print amplitude
+.endc
+
+.end

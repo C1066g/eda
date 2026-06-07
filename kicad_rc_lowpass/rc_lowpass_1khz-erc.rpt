@@ -1,0 +1,30 @@
+ERC report (2026-05-20T22:09:48, Encoding UTF8)
+Report includes: Errors, Warnings
+
+***** Sheet /
+[power_pin_not_driven]: Input Power pin not driven by any Output Power pins
+    ; error
+    @(50.80 mm, 58.42 mm): Symbol #PWR01 引脚 1 [GND, 电源输入, 图线]
+[lib_symbol_mismatch]: 符号 'VDC' 与来源库 'Simulation_SPICE' 中的符号存在差异
+    ; warning
+    @(50.80 mm, 50.80 mm): 符号 V1 [VDC]
+[lib_symbol_mismatch]: 符号 'GND' 与来源库 'power' 中的符号存在差异
+    ; warning
+    @(50.80 mm, 58.42 mm): 符号 #PWR01 [GND]
+[lib_symbol_mismatch]: 符号 'R' 与来源库 'Device' 中的符号存在差异
+    ; warning
+    @(101.60 mm, 50.80 mm): 符号 R1 [R]
+[lib_symbol_mismatch]: 符号 'C' 与来源库 'Device' 中的符号存在差异
+    ; warning
+    @(152.40 mm, 53.34 mm): 符号 C1 [C]
+[lib_symbol_mismatch]: 符号 'GND' 与来源库 'power' 中的符号存在差异
+    ; warning
+    @(152.40 mm, 58.42 mm): 符号 #PWR02 [GND]
+
+ ** ERC messages: 6  Errors 1  Warnings 5
+
+ ** Ignored checks:
+    - Global label only appears once in the schematic
+    - Four connection points are joined together
+    - SPICE model issue
+    - Assigned footprint doesn't match footprint filters

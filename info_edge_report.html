@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>信息差报告 20260531</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a1a;color:#e0e0e0}
+.wrap{max-width:860px;margin:0 auto;padding:14px}
+.head{background:linear-gradient(135deg,#0d0d2b,#1a1a4e);border-radius:14px;padding:22px 26px;margin-bottom:14px;border:1px solid rgba(100,100,255,.15)}
+.head h1{margin:0;font-size:20px;color:#fff}
+.head .meta{font-size:12px;color:#888;display:flex;justify-content:space-between;margin-top:4px}
+.tag{display:inline-block;background:rgba(100,100,255,.15);color:#8ab4ff;border-radius:20px;padding:2px 12px;font-size:11px;margin:3px 3px 0 0;white-space:nowrap}
+
+.row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.card{background:#13132b;border-radius:12px;padding:12px 4px;text-align:center;border:1px solid rgba(100,100,255,.08)}
+.num{font-size:24px;font-weight:700;color:#8ab4ff}
+.lbl{font-size:11px;color:#666;margin-top:2px}
+
+.strat{background:linear-gradient(135deg,#13132b,#1a1a3e);border-radius:12px;padding:16px;margin-bottom:14px;border-left:4px solid #8ab4ff}
+.strat-v{font-size:16px;font-weight:600;color:#8ab4ff;margin-bottom:6px}
+.strat-t{font-size:13px;line-height:1.7;color:#aaa}
+.strat-r{margin-top:8px;font-size:12px;color:#e74c3c}
+
+.ticker-box{background:#13132b;border-radius:12px;padding:16px;margin-bottom:14px;border:1px solid rgba(255,100,100,.15)}
+.ticker-hdr{font-size:14px;font-weight:600;color:#ff6b6b;margin-bottom:8px}
+.tsig{padding:6px 10px;margin-bottom:4px;background:rgba(255,100,100,.08);border-radius:6px;font-size:13px;color:#ccc}
+
+.edge-item{display:flex;background:#13132b;border-radius:12px;margin-bottom:8px;overflow:hidden;border:1px solid rgba(100,100,255,.06)}
+.edge-num{width:36px;background:#0d0d2b;color:#8ab4ff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.edge-body{flex:1;padding:12px 14px;min-width:0}
+.edge-hdr{display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.esrc{font-size:9px;padding:1px 7px;border-radius:3px;font-weight:600}
+.epill{font-size:10px;font-weight:600;padding:1px 8px;border-radius:3px}
+.eurge{font-size:10px;color:#666;margin-left:auto;display:flex;align-items:center;gap:4px}
+.ubar{display:inline-block;height:4px;background:linear-gradient(90deg,#8ab4ff,#e74c3c);border-radius:2px;vertical-align:middle}
+.edge-title{font-size:13px;font-weight:500;line-height:1.5;margin-bottom:4px;color:#eee}
+.tt{display:inline-block;background:rgba(100,100,255,.12);color:#8ab4ff;border-radius:3px;padding:0 6px;font-size:10px;margin:1px 2px}
+.edge-reason{font-size:11px;color:#888;line-height:1.5;margin-top:4px}
+.tw{font-size:10px;color:#666;margin-left:8px}
+.edge-ftr{margin-top:5px}
+.edge-ftr a{color:#5a7db0;font-size:10px;text-decoration:none}
+.empty{text-align:center;padding:60px 20px;color:#555}
+
+.footer{text-align:center;padding:20px;color:#444;font-size:11px}
+@media(max-width:600px){.row{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class=wrap>
+<div class=head>
+<h1>🔍 信息差雷达</h1>
+<div class=meta>
+    <span>2026-05-31 12:35</span>
+    <span>⚡80条快讯 📡20条深度 🔍41个信号</span>
+</div>
+</div>
+
+
+    <div class="row">
+        <div class="card"><div class="num">41</div><div class="lbl">信息差</div></div>
+        <div class="card"><div class="num" style="color:#e74c3c">3</div><div class="lbl">提前泄露</div></div>
+        <div class="card"><div class="num" style="color:#2980b9">23</div><div class="lbl">认知差</div></div>
+        <div class="card"><div class="num" style="color:#e67e22">14</div><div class="lbl">时间差</div></div>
+        <div class="card"><div class="num" style="color:#27ae60">1</div><div class="lbl">数据差</div></div>
+    </div>
+
+    <div class="strat">
+        <div class="strat-v">地缘政治缓和与宏观风险并存，市场短期偏多但需警惕通胀压力。</div>
+        <div class="strat-t">做空原油（USO）及美元（DXY），目标跌幅3-5%；做多美股科技股（PLTR、SOFI）及无人机概念（UMA），止损设2%；关注复星医药私有化套利机会，买入复宏汉霖（B2266.HK），溢价空间约15%。</div>
+        <div class="strat-r">⚠️ 伊朗协议生变或美联储意外加息，导致原油反弹、科技股回调。</div>
+    </div>
+
+        <div class="ticker-box">
+            <div class="ticker-hdr">🎯 NVDA 盯盘信号</div>
+            <div class="tsig">🔔 ❌ 获取失败: Too Many Requests. Rate limited. Try after a while.</div>
+        </div>
+
+<div style="font-size:14px;font-weight:600;margin-bottom:10px;color:#8ab4ff">⏱ 信息差时间轴（按紧迫度排序）</div>
+
+        <div class="edge-item urgency-3">
+            <div class="edge-num">1</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#1565c0;background:#e3f2fd">新浪快讯</span>
+                    <span class="epill" style="color:#e74c3c;background:#fde8e8">提前泄露</span>
+                    <span class="eurge">紧迫度 9/10 <span class="ubar" style="width:90%"></span></span>
+                </div>
+                <div class="edge-title">捷强装备：公司董事长兼总经理因涉嫌职务犯罪被立案调查和实施留</div>
+                <span class="tt">300875</span>
+                <div class="edge-reason">
+                    💡 董事长被查，股价或已提前异动
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://news.sina.com.cn/o/2024-06-26/doc-incaatqy0431244.shtml" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-3">
+            <div class="edge-num">2</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#0d47a1;background:#e3f2fd">雅虎快讯</span>
+                    <span class="epill" style="color:#e67e22;background:#fef6e7">时间差</span>
+                    <span class="eurge">紧迫度 9/10 <span class="ubar" style="width:90%"></span></span>
+                </div>
+                <div class="edge-title">Unusual Machines Stock Looks Like a Winner as Trump Backs Drone Makers</div>
+                <span class="tt">002829</span>
+                <div class="edge-reason">
+                    💡 特朗普支持无人机，A股映射
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://finance.yahoo.com/markets/stocks/articles/unusual-machines-stock-looks-winner-205728091.html" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-3">
+            <div class="edge-num">3</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#0d47a1;background:#e3f2fd">雅虎快讯</span>
+                    <span class="epill" style="color:#e67e22;background:#fef6e7">时间差</span>
+                    <span class="eurge">紧迫度 9/10 <span class="ubar" style="width:90%"></span></span>
+                </div>
+                <div class="edge-title">Dollar Falls as Stocks Rally on Iran Deal Optimism</div>
+                
+                <div class="edge-reason">
+                    💡 伊朗和平协议乐观，A股原油板块或下跌
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://finance.yahoo.com/markets/currencies/articles/dollar-falls-stocks-rally-iran-193641195.html" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-3">
+            <div class="edge-num">4</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#0d47a1;background:#e3f2fd">雅虎快讯</span>
+                    <span class="epill" style="color:#e67e22;background:#fef6e7">时间差</span>
+                    <span class="eurge">紧迫度 9/10 <span class="ubar" style="width:90%"></span></span>
+                </div>
+                <div class="edge-title">US-Iran Peace Hopes Weigh on Crude Oil Prices</div>
+                
+                <div class="edge-reason">
+                    💡 美伊和平预期压低油价，A股石化板块利空
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://finance.yahoo.com/sectors/energy/articles/us-iran-peace-hopes-weigh-191625484.html" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-3">
+            <div class="edge-num">5</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#000;background:#f5f5f5">Reuters</span>
+                    <span class="epill" style="color:#e67e22;background:#fef6e7">时间差</span>
+                    <span class="eurge">紧迫度 9/10 <span class="ubar" style="width:90%"></span></span>
+                </div>
+                <div class="edge-title">Dollar and Oil Slide on US-Iran Ceasefire Extension</div>
+                <span class="tt">600028</span> <span class="tt">601857</span>
+                <div class="edge-reason">
+                    💡 美元和原油因停火下跌，A股油气股将跟跌
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://www.investing.com/analysis/dollar-and-oil-slide-on-usiran-ceasefire-extension-200681160" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-2">
+            <div class="edge-num">6</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#1565c0;background:#e3f2fd">新浪快讯</span>
+                    <span class="epill" style="color:#e74c3c;background:#fde8e8">提前泄露</span>
+                    <span class="eurge">紧迫度 8/10 <span class="ubar" style="width:80%"></span></span>
+                </div>
+                <div class="edge-title">54亿港元！复星医药拟私有化复宏汉霖</div>
+                <span class="tt">600196</span> <span class="tt">02696.HK</span>
+                <div class="edge-reason">
+                    💡 私有化公告前股价或已反应
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://news.sina.com.cn/o/2024-06-24/doc-inazwfkz1956204.shtml" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-2">
+            <div class="edge-num">7</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#0d47a1;background:#e3f2fd">雅虎快讯</span>
+                    <span class="epill" style="color:#e67e22;background:#fef6e7">时间差</span>
+                    <span class="eurge">紧迫度 8/10 <span class="ubar" style="width:80%"></span></span>
+                </div>
+                <div class="edge-title">This Analyst Just Downgraded ASTS Stock, and Blue Origin May Be to Blame</div>
+                <span class="tt">688256</span>
+                <div class="edge-reason">
+                    💡 ASTS利空或映射A股卫星通信
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://finance.yahoo.com/markets/stocks/articles/analyst-just-downgraded-asts-stock-210320461.html" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-2">
+            <div class="edge-num">8</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#0d47a1;background:#e3f2fd">雅虎快讯</span>
+                    <span class="epill" style="color:#e67e22;background:#fef6e7">时间差</span>
+                    <span class="eurge">紧迫度 8/10 <span class="ubar" style="width:80%"></span></span>
+                </div>
+                <div class="edge-title">PLTR Stock Alert: Why Palantir Is Getting a Boost from Dell Earnings</div>
+                <span class="tt">688568</span>
+                <div class="edge-reason">
+                    💡 戴尔财报利好AI，A股映射
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://finance.yahoo.com/markets/stocks/articles/pltr-stock-alert-why-palantir-204408942.html" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-2">
+            <div class="edge-num">9</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#0d47a1;background:#e3f2fd">雅虎快讯</span>
+                    <span class="epill" style="color:#e67e22;background:#fef6e7">时间差</span>
+                    <span class="eurge">紧迫度 8/10 <span class="ubar" style="width:80%"></span></span>
+                </div>
+                <div class="edge-title">SOFI Stock Pops Following SoFi's Stablecoin Announcement. What to Know.</div>
+                <span class="tt">SOFI</span>
+                <div class="edge-reason">
+                    💡 稳定币公告刺激股价，A股区块链概念或联动
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://finance.yahoo.com/markets/crypto/articles/sofi-stock-pops-following-sofis-200719177.html" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-2">
+            <div class="edge-num">10</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#0d47a1;background:#e3f2fd">雅虎快讯</span>
+                    <span class="epill" style="color:#e67e22;background:#fef6e7">时间差</span>
+                    <span class="eurge">紧迫度 8/10 <span class="ubar" style="width:80%"></span></span>
+                </div>
+                <div class="edge-title">More Fed policymakers eye possible rate hike as inflation risks rise</div>
+                
+                <div class="edge-reason">
+                    💡 美联储加息预期升温，A股外资或流出
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://finance.yahoo.com/economy/policy/articles/fed-officials-mull-raising-rates-173021354.html" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-2">
+            <div class="edge-num">11</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#0d47a1;background:#e3f2fd">雅虎快讯</span>
+                    <span class="epill" style="color:#e67e22;background:#fef6e7">时间差</span>
+                    <span class="eurge">紧迫度 8/10 <span class="ubar" style="width:80%"></span></span>
+                </div>
+                <div class="edge-title">Meta Platforms Is Testing AI Chatbot Subscriptions. What to Know.</div>
+                <span class="tt">002230</span>
+                <div class="edge-reason">
+                    💡 Meta测试AI订阅，利好A股AI应用概念
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://finance.yahoo.com/markets/stocks/articles/meta-platforms-testing-ai-chatbot-184039214.html" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-2">
+            <div class="edge-num">12</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#000;background:#f5f5f5">Reuters</span>
+                    <span class="epill" style="color:#2980b9;background:#e8f4fd">认知差</span>
+                    <span class="eurge">紧迫度 8/10 <span class="ubar" style="width:80%"></span></span>
+                </div>
+                <div class="edge-title">A Week of Giant IPOs, Chip Shortages, and Memory Squeezes</div>
+                
+                <div class="edge-reason">
+                    💡 芯片短缺和IPO密集，市场未充分定价
+                    <span class="tw">本周</span>
+                </div>
+                <div class="edge-ftr"><a href="https://www.investing.com/analysis/a-week-of-giant-ipos-chip-shortages-and-memory-squeezes-200681207" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-2">
+            <div class="edge-num">13</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#000;background:#f5f5f5">Reuters</span>
+                    <span class="epill" style="color:#27ae60;background:#e8f5e9">数据差</span>
+                    <span class="eurge">紧迫度 8/10 <span class="ubar" style="width:80%"></span></span>
+                </div>
+                <div class="edge-title">Crude’s Biggest Moving Average Gap Since 1984</div>
+                <span class="tt">USO</span> <span class="tt">XLE</span>
+                <div class="edge-reason">
+                    💡 原油均线缺口创40年最大，市场未充分定价
+                    <span class="tw">1-2天</span>
+                </div>
+                <div class="edge-ftr"><a href="https://www.investing.com/analysis/crudes-biggest-moving-average-gap-since-1984-200681164" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-2">
+            <div class="edge-num">14</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#f57c00;background:#fff3e0">龙虎榜</span>
+                    <span class="epill" style="color:#2980b9;background:#e8f4fd">认知差</span>
+                    <span class="eurge">紧迫度 8/10 <span class="ubar" style="width:80%"></span></span>
+                </div>
+                <div class="edge-title">龙虎榜: 东杰智能 涨跌幅 +2002.00% 上榜</div>
+                <span class="tt">300486</span>
+                <div class="edge-reason">
+                    💡 涨幅异常高，市场或忽视背后逻辑
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://data.eastmoney.com/stock/300486.html" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+        <div class="edge-item urgency-2">
+            <div class="edge-num">15</div>
+            <div class="edge-body">
+                <div class="edge-hdr">
+                    <span class="esrc" style="color:#f57c00;background:#fff3e0">龙虎榜</span>
+                    <span class="epill" style="color:#2980b9;background:#e8f4fd">认知差</span>
+                    <span class="eurge">紧迫度 8/10 <span class="ubar" style="width:80%"></span></span>
+                </div>
+                <div class="edge-title">龙虎榜: 荣旗科技 涨跌幅 +2001.00% 上榜</div>
+                <span class="tt">301360</span>
+                <div class="edge-reason">
+                    💡 涨幅异常，可能隐含未公开利好
+                    <span class="tw">几小时内</span>
+                </div>
+                <div class="edge-ftr"><a href="https://data.eastmoney.com/stock/301360.html" target="_blank">来源 →</a></div>
+            </div>
+        </div>
+
+<div class=footer>数据: 东方快讯/新浪/雅虎/Reuters/SEC/港交所/龙虎榜/大宗/两融 &nbsp;|&nbsp; 分析: DeepSeek</div>
+</div>
+</body>
+</html>

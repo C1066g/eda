@@ -1,0 +1,51 @@
+* 三角波发生器电路
+* 基于积分器和比较器的设计
+
+.title Triangle Wave Generator
+
+* 电源
+VCC vcc 0 DC 15V
+VEE vee 0 DC -15V
+
+* 方波发生器（施密特触发器）
+* 使用运放 U1 作为比较器
+XU1 n1 n2 vcc vee out1 opamp
+R1 out1 n2 10k
+R2 n2 0 10k
+C1 n2 0 100n
+
+* 积分器（产生三角波）
+* 使用运放 U2
+XU2 out1 0 vcc vee n3 opamp
+R3 out1 n3 10k
+C2 n3 out2 100n
+R4 out2 0 10k
+
+* 运放模型（简化的理想运放）
+.subckt opamp inp inn vcc vee out
+* 输入级
+Rin inp inn 10Meg
+* 增益级
+E1 out 0 inp inn 100000
+* 输出限幅
+.model DMOD D
+D1 vcc out DMOD
+D2 out vee DMOD
+.ends
+
+* 初始条件
+.ic V(n2)=0.1V
+
+* 瞬态分析 - 运行 50ms
+.tran 0.01m 50m
+
+* 控制命令
+.control
+run
+* 绘制输出波形
+plot v(out1) v(out2)
+* 打印关键节点电压
+print v(out1) v(out2) v(n2) v(n3)
+.endc
+
+.end

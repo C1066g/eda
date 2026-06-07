@@ -1,0 +1,63 @@
+* Audio Limiter - Sound Level Gate/Compressor
+* When input amplitude exceeds threshold, output is attenuated
+*
+* Circuit Blocks:
+* 1. Variable-gain attenuator (voltage divider + controlled shunt)
+* 2. Precision peak detector (side-chain)
+* 3. Error amplifier / threshold comparator
+* 4. Attack/release timing control
+
+* --- Signal Source ---
+* Sine with ramping amplitude to demonstrate limiting
+Vin in 0 DC 0 SIN(0 0.15 1k)
+
+* --- Variable Attenuator ---
+* R1 in series, controlled shunt to ground
+* When ctrl_volt=0: shunt is high-Z, signal passes unattenuated  
+* When ctrl_volt>0: shunt conducts, forming voltage divider
+R1 in vca_out 1k
+
+* Behavioral shunt: G = 1/R = ctrl_volt * gain_factor
+* At max control: R_effective ~ 100 ohms
+* Attenuation at max: 100/(100+1k) = 0.09 = -21dB
+Gshunt vca_out 0 VALUE = { V(vca_out) * V(ctrl_smooth) * 0.01 }
+
+* --- Output Buffer ---
+Eout out 0 vca_out 0 1
+
+* --- Side-Chain: Full-Wave Rectifier ---
+* Precision absolute-value circuit
+Babs abs_out 0 V = ABS(V(vca_out))
+
+* --- Peak Detector ---
+* Attack time = R_attack * C_peak = fast
+* Release time = R_release * C_peak = slow
+D1 abs_out peak_in 1N4148
+R_attack peak_in peak 10
+C_peak peak 0 10u
+R_release peak 0 47k
+
+* --- Error Amplifier ---
+* Vth = 0.2V peak threshold (~0.14V RMS)
+* When peak < Vth: error = 0 (no attenuation)
+* When peak > Vth: error = peak - Vth, with gain=10
+Berr ctrl_raw 0 V = 10 * LIMIT(0, (V(peak) - 0.2), 0.5)
+
+* --- Control Voltage Smoothing ---
+R_ctrl ctrl_raw ctrl_smooth 1k
+C_ctrl ctrl_smooth 0 4.7u
+
+* --- Diode Model ---
+.model 1N4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+
+* --- Analysis ---
+* 30ms transient: amplitude ramps up, showing limiter action
+.tran 0.05m 30m
+
+.control
+run
+plot V(in) V(out)
+print V(ctrl_smooth)
+.endc
+
+.end

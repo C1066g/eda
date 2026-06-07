@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通信网络技术 · 考试中心</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0e16;--surface:#151822;--surface2:#1c2030;
+  --text:#e8eaf2;--text2:#8b90a5;--text3:#5c6178;
+  --accent:#7b93f5;--green:#6ee7a5;--red:#f07b8a;--amber:#f5c842;--purple:#b59cf5;
+  --radius:14px;--ease:cubic-bezier(0.22,0.61,0.36,1);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;padding:20px;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 700px 500px at 15% -10%,rgba(123,147,245,0.07),transparent),
+             radial-gradient(ellipse 600px 400px at 85% 100%,rgba(110,231,165,0.05),transparent);
+  pointer-events:none;
+}
+.app{max-width:900px;margin:0 auto;position:relative;z-index:1}
+
+.hero{text-align:center;padding:28px 0 24px}
+.hero h1{font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;
+  background:linear-gradient(135deg,#d4dcff,#9eb0f5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--text2);font-size:0.85rem;margin-top:6px}
+
+.countdown{
+  display:flex;justify-content:center;gap:14px;margin:20px 0 28px;flex-wrap:wrap;
+}
+.cd-box{
+  background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius);
+  padding:14px 20px;text-align:center;min-width:72px;
+}
+.cd-num{font-size:1.8rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1}
+.cd-label{font-size:0.65rem;color:var(--text3);margin-top:4px;letter-spacing:0.05em}
+.cd-urgent .cd-num{color:var(--red);animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+
+.section-title{font-size:0.78rem;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin:24px 0 12px}
+
+.plan{display:flex;flex-direction:column;gap:8px}
+.plan-day{
+  display:flex;gap:14px;align-items:flex-start;padding:14px 16px;
+  background:var(--surface);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius);
+  transition:border-color 0.2s var(--ease);cursor:pointer;
+}
+.plan-day:hover{border-color:rgba(123,147,245,0.2)}
+.plan-day.today{border-color:rgba(123,147,245,0.35);background:rgba(123,147,245,0.06)}
+.plan-day.done{opacity:0.55}
+.plan-day.done .plan-check{color:var(--green)}
+.plan-date{min-width:52px;text-align:center}
+.plan-date .d{font-size:0.7rem;color:var(--text3)}
+.plan-date .w{font-size:0.85rem;font-weight:700;color:var(--accent)}
+.plan-day.today .plan-date .w{color:var(--amber)}
+.plan-body{flex:1}
+.plan-body h3{font-size:0.88rem;font-weight:600;margin-bottom:4px}
+.plan-body p{font-size:0.76rem;color:var(--text2);line-height:1.5}
+.plan-check{font-size:1.1rem;color:var(--text3);cursor:pointer;padding:2px 6px;flex-shrink:0;user-select:none}
+.plan-check:hover{color:var(--green)}
+
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.tool{
+  display:block;text-decoration:none;color:inherit;
+  background:var(--surface);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius);
+  padding:16px 18px;transition:all 0.25s var(--ease);
+}
+.tool:hover{border-color:rgba(123,147,245,0.25);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.2)}
+.tool .icon{font-size:1.4rem;margin-bottom:8px}
+.tool h3{font-size:0.88rem;font-weight:600;margin-bottom:4px}
+.tool p{font-size:0.72rem;color:var(--text2);line-height:1.4}
+.tool .badge{display:inline-block;font-size:0.62rem;padding:2px 7px;border-radius:8px;margin-top:6px;font-weight:600}
+.badge-rec{background:rgba(245,200,66,0.12);color:var(--amber)}
+.badge-new{background:rgba(110,231,165,0.12);color:var(--green)}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:8px}
+.stat{
+  background:var(--surface2);border-radius:10px;padding:12px 14px;text-align:center;
+}
+.stat .n{font-size:1.3rem;font-weight:700;color:var(--accent)}
+.stat .l{font-size:0.68rem;color:var(--text3);margin-top:2px}
+
+.wrong-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  background:rgba(240,123,138,0.08);border:1px solid rgba(240,123,138,0.15);border-radius:var(--radius);
+  padding:14px 18px;margin-top:16px;
+}
+.wrong-bar p{font-size:0.82rem;color:var(--red)}
+.wrong-bar a{
+  font-size:0.78rem;font-weight:600;color:#fff;background:var(--red);
+  padding:7px 16px;border-radius:18px;text-decoration:none;
+}
+.wrong-bar a:hover{opacity:0.9}
+
+.tips{
+  background:var(--surface);border-radius:var(--radius);padding:16px 18px;
+  border-left:3px solid var(--purple);margin-top:16px;
+}
+.tips h3{font-size:0.82rem;color:var(--purple);margin-bottom:8px}
+.tips ul{font-size:0.76rem;color:var(--text2);line-height:1.7;padding-left:18px}
+.tips li{margin-bottom:2px}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero h1{font-size:1.25rem}
+  .tools{grid-template-columns:1fr 1fr}
+  .cd-box{padding:10px 14px;min-width:60px}
+  .cd-num{font-size:1.4rem}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hero">
+    <h1>通信网络技术 · 考试中心</h1>
+    <p>上机考试 · 6章全覆盖 · 6月10日（周三）开考</p>
+  </div>
+
+  <div class="countdown" id="countdown"></div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="section-title">📅 冲刺计划（6/6 → 6/10 考试）</div>
+  <div class="plan" id="plan"></div>
+
+  <div class="section-title">🛠 复习工具</div>
+  <div class="tools">
+    <a class="tool" href="通信网络技术_分类复习.html">
+      <div class="icon">🧠</div>
+      <h3>分类复习</h3>
+      <p>100+道记忆题 + 计算速查，按章筛选</p>
+      <span class="badge badge-rec">每日必做</span>
+    </a>
+    <a class="tool" href="通信网络技术_上机模考.html">
+      <div class="icon">📝</div>
+      <h3>上机模考</h3>
+      <p>153题含填空/判断，贴近作业格式</p>
+      <span class="badge badge-rec">推荐</span>
+    </a>
+    <a class="tool" href="通信网络技术_题库模考.html">
+      <div class="icon">📋</div>
+      <h3>题库模考</h3>
+      <p>259道精选单选，支持限时30题模考</p>
+      <span class="badge badge-new">已优化</span>
+    </a>
+    <a class="tool" href="通信网络技术_复习闪卡.html">
+      <div class="icon">🃏</div>
+      <h3>复习闪卡</h3>
+      <p>碎片时间翻卡，支持标记重点</p>
+    </a>
+    <a class="tool" href="通信网络技术_快速复习.html">
+      <div class="icon">⚡</div>
+      <h3>快速复习</h3>
+      <p>章节速查表，考前最后过一遍</p>
+    </a>
+    <a class="tool" href="通信网络技术_章节作业复习_第1章.md">
+      <div class="icon">📄</div>
+      <h3>第1章作业答案</h3>
+      <p>概论 · 计算题+单选+判断</p>
+    </a>
+    <a class="tool" href="通信网络技术_第4章公式速查.html">
+      <div class="icon">📐</div>
+      <h3>第4章公式速查</h3>
+      <p>子网/CIDR/分片/RIP · 含作业原题</p>
+      <span class="badge badge-rec">重点</span>
+    </a>
+    <a class="tool" href="通信网络技术_章节作业复习_第4章.md">
+      <div class="icon">📄</div>
+      <h3>第4章作业答案</h3>
+      <p>网络层 · 34题完整答案</p>
+    </a>
+  </div>
+
+  <div id="wrongBar"></div>
+
+  <div class="tips">
+    <h3>⚠️ 上机考试易错点</h3>
+    <ul>
+      <li><b>速率 k/M/G/T</b> 用 10³；<b>数据量 K/M/G/T</b> 用 2¹⁰（第1章必考）</li>
+      <li><b>物理层四特性</b>：机械/电气/功能/规程（过程）</li>
+      <li><b>半双工</b>=双向交替（对讲机）；<b>全双工</b>=双向同时</li>
+      <li><b>ARP</b>：发送时目的IP无MAC映射才发请求（不是接收时）</li>
+      <li><b>TCP三次握手</b>：SYN=1,ACK=0 → SYN=1,ACK=1 → SYN=0,ACK=1</li>
+      <li><b>DHCP DISCOVER</b>：源 0.0.0.0，目的 255.255.255.255</li>
+      <li><b>香农</b>：C=W·log₂(1+S/N)，30dB→S/N=1000，4kHz→约40kbps</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+const EXAM_DATE = new Date('2026-06-10T09:00:00');
+const PLAN_KEY = 'net-exam-plan-done';
+const WRONG_KEY = 'net-exam-wrong';
+
+const PLAN = [
+  {date:'6/6', day:'周六', ch:'第1~2章', title:'概论 + 物理层', tasks:'快速复习 ch1/ch2 → 分类复习刷题 → 香农/波特率计算', link:'通信网络技术_分类复习.html'},
+  {date:'6/7', day:'周日', ch:'第3章', title:'数据链路层', tasks:'CRC/CSMA/CD/VLAN/交换机 → 闪卡过一遍 → 上机模考 ch3', link:'通信网络技术_上机模考.html'},
+  {date:'6/8', day:'周一', ch:'第4章', title:'网络层（重点）', tasks:'IP子网/RIP/ARP/路由聚合 → 题库模考30题限时 → 错题重做', link:'通信网络技术_题库模考.html'},
+  {date:'6/9', day:'周二', ch:'第5~6章', title:'运输层 + 应用层 + 模考', tasks:'TCP/DNS/DHCP → 分类复习 ch5/ch6 → 晚间上机模考全套 + 刷错题', link:'通信网络技术_上机模考.html'},
+  {date:'6/10', day:'周三', ch:'🎯', title:'上机考试', tasks:'带好证件，先做单选/判断，计算题留公式草稿', link:''},
+];
+
+function getPlanDone(){try{return JSON.parse(localStorage.getItem(PLAN_KEY)||'[]');}catch{return[];}}
+function togglePlan(i){
+  const done=getPlanDone();
+  const idx=done.indexOf(i);
+  if(idx>=0)done.splice(idx,1);else done.push(i);
+  localStorage.setItem(PLAN_KEY,JSON.stringify(done));
+  renderPlan();
+}
+
+function renderCountdown(){
+  const now=new Date();
+  const diff=EXAM_DATE-now;
+  const el=document.getElementById('countdown');
+  if(diff<=0){
+    el.innerHTML='<div class="cd-box cd-urgent"><div class="cd-num">🎯</div><div class="cd-label">今天考试</div></div>';
+    return;
+  }
+  const d=Math.floor(diff/86400000);
+  const h=Math.floor((diff%86400000)/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const urgent=d<=1;
+  el.innerHTML=`
+    <div class="cd-box${urgent?' cd-urgent':''}"><div class="cd-num">${d}</div><div class="cd-label">天</div></div>
+    <div class="cd-box"><div class="cd-num">${h}</div><div class="cd-label">时</div></div>
+    <div class="cd-box"><div class="cd-num">${m}</div><div class="cd-label">分</div></div>
+  `;
+}
+
+function renderPlan(){
+  const done=getPlanDone();
+  const today=new Date();
+  const todayStr=`${today.getMonth()+1}/${today.getDate()}`;
+  document.getElementById('plan').innerHTML=PLAN.map((p,i)=>{
+    const isToday=p.date===todayStr;
+    const isDone=done.includes(i);
+    return`<div class="plan-day${isToday?' today':''}${isDone?' done':''}" ${p.link?`onclick="location.href='${p.link}'"`:''}>
+      <div class="plan-date"><div class="d">${p.date}</div><div class="w">${p.day}</div></div>
+      <div class="plan-body">
+        <h3>${p.ch} ${p.title}</h3>
+        <p>${p.tasks}</p>
+      </div>
+      <span class="plan-check" onclick="event.stopPropagation();togglePlan(${i})">${isDone?'✅':'○'}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderStats(){
+  const wrong=JSON.parse(localStorage.getItem(WRONG_KEY)||'[]');
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="n">6</div><div class="l">章节</div></div>
+    <div class="stat"><div class="n">100+</div><div class="l">记忆题</div></div>
+    <div class="stat"><div class="n">259</div><div class="l">题库单选</div></div>
+    <div class="stat"><div class="n">${wrong.length}</div><div class="l">错题待复习</div></div>
+  `;
+  const bar=document.getElementById('wrongBar');
+  if(wrong.length>0){
+    bar.innerHTML=`<div class="wrong-bar">
+      <p>📕 错题本有 <b>${wrong.length}</b> 道题待复习</p>
+      <a href="通信网络技术_题库模考.html?mode=wrong">刷错题 →</a>
+    </div>`;
+  }
+}
+
+renderCountdown();
+renderPlan();
+renderStats();
+setInterval(renderCountdown,60000);
+</script>
+</body>
+</html>

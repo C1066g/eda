@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "kicad": {
+      "command": "/Users/mac/mcp-servers/kicad-mcp/.venv/bin/kicad-mcp",
+      "env": {
+        "PATH": "/opt/homebrew/bin:/Users/mac/.local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "KICAD_APP_PATH": "/Applications/KiCad/KiCad.app",
+        "KICAD_SEARCH_PATHS": "/Users/mac/eda,/Users/mac/line_earphone/kicad,/Users/mac/ltspice"
+      }
+    },
+    "spicebridge": {
+      "command": "/Users/mac/.local/bin/uvx",
+      "args": ["spicebridge"],
+      "env": {
+        "PATH": "/opt/homebrew/bin:/Users/mac/.local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    },
+    "yahoo-finance": {
+      "command": "npx",
+      "args": ["-y", "mcp-yahoo-finance"]
+    }
+  }
+}

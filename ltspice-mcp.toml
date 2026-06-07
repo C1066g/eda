@@ -1,0 +1,57 @@
+# LTSpice MCP Server Configuration
+# All settings have sensible defaults and can be overridden with environment variables
+
+[simulator]
+# Preferred simulator: ltspice, ngspice, qspice, xyce
+# Leave empty or set to null for auto-detection (prefers LTSpice if available)
+default = "ngspice"
+
+# Explicit path to simulator executable (overrides auto-detection)
+# Leave empty for auto-detection
+path = ""
+
+[security]
+# Paths accessible to the server (sandbox)
+# Default: ["."] (current working directory)
+allowed_paths = [".", "/Users/mac/Library/Application Support/LTspice/lib"]
+
+[simulation]
+# Maximum number of concurrent simulations
+max_parallel = 4
+
+# Default simulation timeout in seconds
+timeout = 300.0
+
+[analysis]
+# Maximum waveform data points to return per trace
+max_points = 10000
+
+[plotting]
+# Plot resolution in DPI
+dpi = 150
+
+# Matplotlib style (e.g., seaborn-v0_8-darkgrid, ggplot, bmh)
+style = "seaborn-v0_8-darkgrid"
+
+[tools]
+# Tool profile: "full" (all tools) or "agentic" (subset for LLM agents)
+# "agentic" removes netlist-editing tools that capable agents handle natively
+profile = "full"
+
+[schematic]
+# Custom paths to LTspice symbol (.asy) files for .asc schematic support
+# On Windows and WSL these are auto-detected from the LTspice installation
+# Set this to override auto-detection or for non-standard installs
+# Example: symbol_paths = ["/path/to/LTspice/lib/sym"]
+symbol_paths = ["/Users/mac/Library/Application Support/LTspice/lib/sym"]
+
+[logging]
+# Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+level = "INFO"
+
+[state]
+# Persist simulation/batch job metadata to .ltspice-mcp/jobs/ next to each circuit.
+# Lets a restarted server surface prior runs and recent circuits; set to false to disable.
+persist_jobs = true
+# preload_recent_count: at startup, eagerly load persisted jobs for this many recently-touched circuits. 0 disables preload (lazy-only).
+preload_recent_count = 10

@@ -1,0 +1,50 @@
+* NMOS Common-Source Amplifier
+* Specs: Av >= 20dB, BW >= 100kHz, VDD=5V, RL=10k, CL=10pF
+*
+* Hand calculation:
+*   ID ≈ 0.15mA, RD = 20k, W/L = 20
+*   gm ≈ 0.77mS, ro ≈ 333k
+*   Av ≈ -gm·(RD||ro||RL) ≈ -0.77m·(20k||333k||10k) ≈ -5.5
+*   → Need larger gm. Target gm > 2mS ⇒ ID > 1mA.
+*   Revised: ID = 1mA, RD = 2.5k, W/L = 50
+*   gm = sqrt(2·KP·W/L·ID) = sqrt(2·200u·50·1m) = sqrt(20m) = 4.47mS
+*   ro = 1/(LAMBDA·ID) = 1/(0.02·1m) = 50k
+*   Av = -gm·(RD||ro||RL) = -4.47m·(2.5k||50k||10k) = -4.47m·1.82k = -8.1
+*   → Still short. Bump RD to 5k:
+*   Av = -4.47m·(5k||50k||10k) = -4.47m·3.03k = -13.6
+*   → ID=1mA, RD=5k, VDS = 5-5=0 → cutoff!
+*   → Need lower ID or accept lower gain. Let's just simulate and iterate.
+
+VDD vdd 0 DC 5V
+Vin in 0 AC 1 SIN(0 10m 10k)
+
+* Bias network: VG ≈ 1.2V (for VGS ≈ 0.9V at ID≈0.5mA)
+R1 vdd gate 380k
+R2 gate 0 120k
+
+* Amplifier stage
+M1 drain gate 0 0 NMOS1 W=20u L=1u
+RD vdd drain 5k
+
+* Output coupling + load
+Cout drain out 1u
+RL out 0 10k
+CL out 0 10p
+
+* Input coupling
+Cin in gate 0.1u
+
+* NMOS model (Level-1)
+.MODEL NMOS1 NMOS (VTO=0.7 KP=200u GAMMA=0.5 LAMBDA=0.02
++                     PHI=0.8 TOX=40n CGSO=0.3n CGDO=0.3n)
+
+* Analyses
+.op
+.ac dec 100 1 100Meg
+.tran 0.01u 500u
+
+* Measurements
+.meas AC gain_max MAX VDB(out)
+.meas TRAN vout_pp PP V(out)
+
+.end

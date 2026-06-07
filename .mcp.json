@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "ltspice": {
+      "command": "/Users/mac/.local/bin/ltspice-mcp",
+      "args": [],
+      "env": {}
+    }
+  }
+}

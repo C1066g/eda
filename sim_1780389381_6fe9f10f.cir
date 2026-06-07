@@ -1,0 +1,36 @@
+* NMOS Common-Source Amplifier — Design Iteration 2
+* Specs: Av >= 20dB (10x), BW >= 100kHz, RL=10k, CL=10pF
+*
+* Design (VDD=10V to allow sufficient swing):
+*   Target ID=0.5mA, RD=8.2k, W/L=30
+*   gm = 2.45mS, ro = 100k
+*   Av = -gm·(RD||ro||RL) = -2.45m·(8.2k||100k||10k) = -2.45m·4.27k = -10.5 = 20.4dB
+*   VDS = 10 - 8.2k·0.5m = 5.9V (good swing margin)
+
+VDD vdd 0 DC 10V
+Vin in 0 AC 1 SIN(0 10m 10k)
+
+* Gate bias: VG ≈ 1.11V  (800k:100k divider from 10V)
+R1 vdd gate 800k
+R2 gate 0 100k
+
+* Common-source stage: W/L=30, L=1u
+M1 drain gate 0 0 NMOS1 W=30u L=1u
+RD vdd drain 8.2k
+
+* Output coupling + load
+Cout drain out 1u
+RL out 0 10k
+CL out 0 10p
+
+* Input coupling
+Cin in gate 0.1u
+
+* NMOS Level-1 model
+.MODEL NMOS1 NMOS (VTO=0.7 KP=200u GAMMA=0.5 LAMBDA=0.02
++                     PHI=0.8 TOX=40n CGSO=0.3n CGDO=0.3n)
+
+.op
+.ac dec 100 1 100Meg
+.tran 0.01u 500u
+.end

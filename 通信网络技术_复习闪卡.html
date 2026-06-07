@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通信网络技术 · 章节复习闪卡</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#090b12;--surface:#131620;--text:#e2e4ed;--text2:#797e96;--text3:#555a70;
+  --accent:#7b93f5;--accent-soft:rgba(123,147,245,0.08);--accent-glow:rgba(123,147,245,0.15);
+  --green:#6ee7a5;--amber:#f5c842;--rose:#f07b8a;--purple:#b59cf5;--orange:#f5a862;
+  --radius:18px;--ease:cubic-bezier(0.22,0.61,0.36,1);--spring:cubic-bezier(0.34,1.56,0.64,1);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:center;
+  padding:24px;user-select:none;-webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 800px 600px at 30% -20%,rgba(123,147,245,0.04),transparent),
+             radial-gradient(ellipse 600px 500px at 80% 120%,rgba(110,231,165,0.03),transparent),
+             radial-gradient(ellipse 500px 400px at 50% 50%,rgba(245,200,66,0.02),transparent);
+  pointer-events:none;z-index:0;
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(rgba(255,255,255,0.025) 0.5px,transparent 0.5px);
+  background-size:32px 32px;pointer-events:none;z-index:0;
+}
+.app{width:100%;max-width:680px;display:flex;flex-direction:column;gap:18px;position:relative;z-index:1}
+.header{text-align:center}
+.header h1{font-size:1.3rem;font-weight:700;letter-spacing:-0.02em;background:linear-gradient(135deg,#c8d2f8,#a0b0f0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header p{font-size:0.75rem;color:var(--text2);margin-top:2px}
+.categories{display:flex;gap:5px;flex-wrap:wrap;justify-content:center}
+.cat-btn{padding:6px 13px;border-radius:22px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:var(--text2);font-size:0.72rem;font-weight:500;cursor:pointer;transition:all 0.3s var(--ease);white-space:nowrap;font-family:inherit;letter-spacing:0.01em;backdrop-filter:blur(4px)}
+.cat-btn:hover{border-color:rgba(255,255,255,0.12);color:var(--text);background:rgba(255,255,255,0.04);transform:translateY(-1px)}
+.cat-btn.active{background:var(--accent-soft);color:var(--accent);border-color:rgba(123,147,245,0.25);box-shadow:0 0 16px var(--accent-glow)}
+.subtabs{display:flex;gap:3px;justify-content:center;flex-wrap:wrap}
+.subtab-btn{padding:4px 13px;border-radius:14px;border:none;background:transparent;color:var(--text3);font-size:0.72rem;font-weight:500;cursor:pointer;transition:all 0.22s var(--ease);font-family:inherit}
+.subtab-btn:hover{color:var(--text2)}
+.subtab-btn.active{background:rgba(255,255,255,0.05);color:var(--accent)}
+.progress-bar-wrap{display:flex;align-items:center;gap:14px}
+.progress-bar{flex:1;height:3px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#a5b8f7);border-radius:3px;transition:width 0.4s var(--ease);box-shadow:0 0 8px var(--accent-glow)}
+.progress-text{font-size:0.73rem;color:var(--text3);min-width:58px;text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+.card-container{perspective:1200px;min-height:380px;cursor:pointer;touch-action:manipulation}
+.card-container:hover .card:not(.flipped){transform:translateY(-2px)}
+.card-container:active .card:not(.flipped){transform:translateY(0) scale(0.985)}
+.card{width:100%;height:100%;position:relative;transition:transform 0.55s var(--spring);transform-style:preserve-3d}
+.card.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;border-radius:var(--radius);background:linear-gradient(160deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 32px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 1px 2px rgba(0,0,0,0.2),0 4px 24px rgba(0,0,0,0.15);overflow-y:auto}
+.card-face::before{content:'';position:absolute;top:0;left:20px;right:20px;height:1px;background:linear-gradient(90deg,transparent,var(--accent-glow),transparent);opacity:0.5}
+.card-back{transform:rotateY(180deg);background:linear-gradient(160deg,rgba(110,231,165,0.04),rgba(110,231,165,0.01));border-color:rgba(110,231,165,0.08)}
+.card-tag{position:absolute;top:18px;left:24px;font-size:0.66rem;color:var(--accent);letter-spacing:0.1em;font-weight:600;opacity:0.75}
+.card-index{position:absolute;top:18px;right:24px;font-size:0.7rem;color:var(--text3);font-variant-numeric:tabular-nums;font-weight:500}
+.card-en{font-size:1.1rem;font-weight:550;text-align:center;line-height:1.55;letter-spacing:-0.01em;word-break:break-word;color:#dde0ef;padding:0 4px;max-width:100%}
+.card-zh{font-size:1.3rem;font-weight:700;text-align:center;color:var(--green);margin-bottom:6px;padding:0 8px}
+.card-tip{font-size:0.78rem;color:var(--text3);text-align:center;line-height:1.5;margin-top:6px;max-width:92%}
+.card-badge{display:inline-block;padding:3px 11px;border-radius:10px;font-size:0.67rem;font-weight:600;margin-top:10px;letter-spacing:0.03em}
+.badge-dx{background:var(--accent-soft);color:var(--accent)}
+.badge-dd{background:rgba(240,123,138,0.08);color:var(--rose)}
+.badge-tk{background:rgba(245,200,66,0.08);color:var(--amber)}
+.badge-pd{background:rgba(110,231,165,0.08);color:var(--green)}
+.badge-js{background:rgba(181,156,245,0.08);color:var(--purple)}
+.badge-ls{background:rgba(245,168,98,0.08);color:var(--orange)}
+.badge-yl{background:rgba(94,196,209,0.08);color:#5ec4d1}
+.card-hint{position:absolute;bottom:16px;font-size:0.64rem;color:var(--text3);opacity:0.35;letter-spacing:0.02em}
+.points{position:absolute;top:18px;right:70px;font-size:0.66rem;color:var(--amber);font-weight:600;opacity:0.8}
+.nav{display:flex;align-items:center;justify-content:center;gap:12px}
+.nav-btn{width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text2);font-size:1.05rem;cursor:pointer;transition:all 0.25s var(--ease);display:flex;align-items:center;justify-content:center;font-family:inherit;backdrop-filter:blur(4px)}
+.nav-btn:hover{background:rgba(255,255,255,0.05);border-color:rgba(123,147,245,0.3);color:var(--text);box-shadow:0 0 20px var(--accent-glow)}
+.nav-btn:active{transform:scale(0.93)}
+.nav-primary{padding:10px 30px;border-radius:24px;border:1px solid rgba(123,147,245,0.15);background:linear-gradient(135deg,rgba(123,147,245,0.2),rgba(123,147,245,0.08));color:#c5cff7;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.3s var(--ease);font-family:inherit;letter-spacing:0.02em;backdrop-filter:blur(4px);box-shadow:0 0 20px rgba(123,147,245,0.06)}
+.nav-primary:hover{background:linear-gradient(135deg,rgba(123,147,245,0.3),rgba(123,147,245,0.12));color:#fff;box-shadow:0 0 30px var(--accent-glow);transform:translateY(-1px)}
+.nav-primary:active{transform:scale(0.96)}
+.actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.action-btn{padding:7px 17px;border-radius:20px;border:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.02);color:var(--text2);font-size:0.75rem;font-weight:500;cursor:pointer;transition:all 0.25s var(--ease);font-family:inherit;backdrop-filter:blur(4px)}
+.action-btn:hover{border-color:rgba(255,255,255,0.12);color:var(--text);background:rgba(255,255,255,0.04)}
+.action-btn.marked{background:rgba(245,200,66,0.12);color:var(--amber);border-color:rgba(245,200,66,0.2)}
+.kbd-hints{text-align:center;font-size:0.66rem;color:var(--text3);opacity:0.5;display:flex;gap:18px;justify-content:center;flex-wrap:wrap;letter-spacing:0.02em}
+.kbd-hints kbd{display:inline-block;padding:2px 7px;border-radius:5px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);font-family:inherit;font-size:0.64rem;font-weight:500}
+@keyframes cardIn{from{opacity:0}to{opacity:1}}
+.card-en,.card-zh{animation:cardIn 0.35s var(--ease)}
+.nav-home{display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--text2);text-decoration:none;margin-bottom:8px;padding:4px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02)}
+.nav-home:hover{color:var(--accent);border-color:rgba(123,147,245,0.3)}
+@media(max-width:480px){
+  body{padding:14px}
+  .card-container{min-height:320px}
+  .card-en{font-size:0.95rem!important}
+  .card-zh{font-size:1.1rem}
+  .card-face{padding:20px}
+  .app{gap:12px}
+  .cat-btn{padding:5px 10px;font-size:0.67rem}
+  .nav-btn{width:40px;height:40px}
+  .nav-primary{padding:8px 22px;font-size:0.82rem}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <a class="nav-home" href="通信网络技术_考试中心.html">← 考试中心</a>
+  <div class="header">
+    <h1>通信网络技术 · 章节复习</h1>
+    <p>第1-6章作业 · 共146题</p>
+  </div>
+  <div class="categories" id="categories"></div>
+  <div class="subtabs" id="subtabs"></div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-text" id="progressText">0/0</span>
+  </div>
+  <div class="card-container" id="cardContainer" onclick="flipCard()">
+    <div class="card" id="card">
+      <div class="card-face card-front">
+        <span class="card-tag" id="cardTag"></span>
+        <span class="points" id="cardPoints"></span>
+        <span class="card-index" id="cardIndex"></span>
+        <div class="card-en" id="cardEn"></div>
+        <span class="card-hint">点击 / 空格 查看答案</span>
+      </div>
+      <div class="card-face card-back">
+        <div class="card-zh" id="cardZh"></div>
+        <div class="card-tip" id="cardTip"></div>
+        <span class="card-badge" id="cardBadge"></span>
+        <span class="card-hint">点击 / 空格 返回题目</span>
+      </div>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" onclick="prevCard()">◀</button>
+    <button class="nav-primary" onclick="shuffleCards()">🔀 随机</button>
+    <button class="nav-btn" onclick="nextCard()">▶</button>
+  </div>
+  <div class="actions">
+    <button class="action-btn" id="btnMark" onclick="toggleMark()">☆ 收藏</button>
+    <button class="action-btn" id="btnShowMarked" onclick="showOnlyMarked()">📌 仅看收藏</button>
+    <button class="action-btn" onclick="resetProgress()">↺ 重置</button>
+  </div>
+  <div class="kbd-hints">
+    <span><kbd>←</kbd><kbd>→</kbd>翻页</span>
+    <span><kbd>Space</kbd>翻转</span>
+    <span><kbd>S</kbd>收藏</span>
+    <span><kbd>R</kbd>随机</span>
+  </div>
+</div>
+<script>
+const V=[];
+function A(en,zh,tip,cat,sub,type,pts){V.push({en,zh,tip,cat,sub,type,pts:pts||''});}
+
+// ====== Chapter 1 ======
+A("长度10^8bit数据块，带宽1Mbps，发送时延？光纤1000km(2×10^8m/s)，传播时延？","发送时延=100s，传播时延=5ms","计算公式：T发=L/R, T传=d/v","ch1","计算","js","10分")
+A("点对点链路50km(2×10^8m/s)，带宽应为多少使传播时延和发送100B分组的发送时延一样？512B呢？","B1=3.2Mbps, B2=16.384Mbps","Tp=d/v=2.5×10^-4s, B=L/Tp","ch1","计算","js","10分")
+A("传输距离1000km(2×10^8m/s)，数据10^7bit速率100kbps的发送时延和传播时延？","发送时延=100s, 传播时延=5ms","发送时延=L/R, 传播时延=d/v","ch1","计算","js","10分")
+A("传输距离1000km，数据10^3bit速率1Gbps的发送时延和传播时延？","发送时延=1μs, 传播时延=5ms","速率高了发送时延大幅下降","ch1","计算","js","")
+A("在下列有关网络分层的原则中，正确的是( )","D. 每层的功能应明确","A错(功能不应重复)；B错(层数适量)；C错(信息量应少)","ch1","单选","dx","5分")
+A("当数据分组从网络高层移动到底层时，其首部会被逐层___","B. 加上","自上而下逐层封装、加首部；自下而上逐层解封、去首部","ch1","单选","dx","5分")
+A("1Byte等于多少个bit?","A. 8","基本概念","ch1","单选","dx","5分")
+A("以下不属于计算机网络分层结构优点的是？","A. 各层之间是没有任何关系的","层之间通过接口有明确关系","ch1","单选","dx","5分")
+A("速率单位k、M、G、T的数值为( )","B. 10^3, 10^6, 10^9, 10^12","⚠️ 速率用10^3，数据量用2^10！","ch1","单选","dx","5分")
+A("数据量单位k、M、G、T的数值为( )","C. 2^10, 2^20, 2^30, 2^40","1KB=1024B，数据量用2的幂","ch1","单选","dx","5分")
+A("在OSI参考模型中，自上而下第一个提供端到端服务的是()","A. 传输层","物理层+链路层=点到点；网络层以上=端到端","ch1","单选","dx","5分")
+A("链路100Mbps，主机A网卡1Gbps，主机B网卡10Mbps，A给B发送最高理论速率？","A. 10Mbps","木桶效应：min(发送速率, 链路带宽, 接收速率)","ch1","单选","dx","5分")
+A("1MB等于多少Byte?","D. 2^20 = 1048576","1M=2^20, 1B=8b","ch1","单选","dx","5分")
+A("计算机网络分为广域网、城域网和局域网，划分的主要依据是( )","D. 网络的作用范围","WAN>MAN>LAN，按地理范围划分","ch1","单选","dx","5分")
+A("在OSI体系结构中，第N层向第N+1层提供服务和协议。","错","只提供服务，不是协议。协议是层内对等实体间的规则","ch1","判断","pd","5分")
+A("网络利用率越高越好。","错","利用率高→排队时延急剧增加","ch1","判断","pd","5分")
+A("同步卫星链路的RTT比较小，这是因为其带宽比较大。","错","RTT大是因为距离远(36000km×2)，传播时延主导","ch1","判断","pd","5分")
+A("TCP/IP体系结构自下而上的第二层是____。","网络层 / 网际层","TCP/IP：网络接口层→网际层→运输层→应用层","ch1","填空","tk","5分")
+
+// ====== Chapter 2 ======
+A("下列选项中，不属于物理层接口规范定义范畴的是( )","A. 物理地址","物理地址(MAC)是数据链路层的概念","ch2","单选","dx","5.8分")
+A("对讲机的通信方式属于( )","B. 双向交替通信(半双工)","⚠️ 对讲机：按着说，松开听，不能同时","ch2","单选","dx","5.8分")
+A("在OSI参考模型中，物理层的功能是( )","B. 透明地传输原始比特流","A是链路层(传帧)，C/D不是物理层职责","ch2","单选","dx","5.8分")
+A("下列有关曼彻斯特编码的叙述，正确的是( )","D. 将时钟与数据取值都包含在信号中","每个码元中间都有跳变，既做时钟又传数据","ch2","单选","dx","5.9分")
+A("描述一个物理层接口引脚在处于高电平时的含义，该描述属于( )","D. 功能特性","电气=电压范围；功能=电平含义；规程=事件顺序；机械=形状尺寸","ch2","单选","dx","5.9分")
+A("影响信道最大传输速率的因素主要有( )","D. 信道带宽和信噪比","香农公式：C=W·log₂(1+S/N)","ch2","单选","dx","5.9分")
+A("在下列传输介质中，哪种传输介质的抗电磁干扰性最好？","D. 光缆","光纤用光信号，不受电磁干扰","ch2","单选","dx","5.9分")
+A("一段差分曼彻斯特编码信号波形，其二进制位串是？","B. 1011 1001","差分曼彻斯特：位开始有跳变=0，无跳变=1","ch2","单选","dx","5.9分")
+A("在物理层接口特性中，用于描述完成每种功能的事件发生顺序的是( )","C. 过程特性(规程特性)","4种特性：机械、电气、功能、过程","ch2","单选","dx","5.9分")
+A("数字基带信号通过( )后可在模拟信道进行传输。","C. 调制","调制=数字→模拟；解调=模拟→数字","ch2","单选","dx","5.9分")
+A("允许数据信号有条件的双向传输但不能同时双向传输的通信方式是？","D. 半双工","单工=单向；半双工=双向交替；全双工=双向同时","ch2","单选","dx","5.9分")
+A("双绞线是用两根绝缘导线绞合而成的，绞合的主要目的是( )","D. 减少干扰","两根线产生的电磁干扰相互抵消","ch2","单选","dx","5.9分")
+A("若链路带宽4kHz，信噪比30dB，理论最大传输速率是？","B. 40kbps","30dB→S/N=1000. C=4000×log₂(1+1000)≈4000×10=40k","ch2","单选","dx","5.9分")
+A("32相调制技术，波特率1200，比特率是多少？","C. 6000 b/s","S=B·log₂V=1200×log₂32=1200×5=6000","ch2","单选","dx","5.9分")
+A("信号电平+10~+15V表0，-10~-15V表1，电线长度≤15m，体现物理层接口的( )","C. 电气特性","规定电压范围→电气特性","ch2","单选","dx","5.9分")
+A("在光纤网中采用的多路复用技术是( )","C. 波分复用(WDM)","光纤用波长划分信道","ch2","单选","dx","5.9分")
+A("在电缆中采用屏蔽技术带来的好处主要是( )","B. 减少电磁干扰辐射","屏蔽层阻隔外部电磁干扰","ch2","单选","dx","5.9分")
+
+// ====== Chapter 3 ======
+A("若采用CRC校验，生成多项式为G(x)=x⁴+x³+x+1(即11011)，除数为？","B. 11011","生成多项式系数即为除数","ch3","单选","dx","2.5分")
+A("下列属于奇偶校验码特征的是( )","B. 只能检查出奇数个比特出现误码","奇数误码→比特1数量奇偶性改变→可检出。偶数→检不出。CRC漏检率更低","ch3","单选","dx","2.5分")
+A("假设交换机转发表为空，收到某个单播帧后会( )","B. 泛洪(广播到除入口外的其他端口)","表空→不知道目的在哪→泛洪学习","ch3","单选","dx","2.5分")
+A("转发表空，B→C数据帧后C→B确认帧，交换机转发端口分别是？","D. {1,3}和{2}","B→C泛洪{1,3}；C→B已学到B在端口1，定向转发到{2}","ch3","单选","dx","2.5分")
+A("数据101110，CRC生成多项式G(X)=X³+1，余数是？","C. 011","除数=1001，数据后加3个0→101110000，模2除法得余数011","ch3","单选","dx","2.5分")
+A("下列属于数据链路层互连设备的是( )","B. 网桥和交换机","路由器=网络层；集线器=物理层；网关=高层","ch3","单选","dx","2.5分")
+A("所有计算机连接到一条通信线路上，两端有防反射装置，这种结构是？","C. 总线结构","总线结构特点：共享一条线路，两端有终结器防反射","ch3","单选","dx","2.5分")
+A("各主机MAC和网桥转发表如图，A→C以太网帧能到达几台主机？","A. 5","⚠️ 网桥转发表有记录，只转发到对应端口","ch3","单选","dx","2.5分")
+A("交换式100Mb/s以太网10个用户，每个用户带宽？","D. 100Mb/s","交换机每个端口独占带宽，不是共享","ch3","单选","dx","2.5分")
+A("5台计算机连接10Mb/s集线器，每台平均带宽？","D. 2Mb/s","集线器共享带宽：10/5=2。交换机vs集线器的关键区别","ch3","单选","dx","2.5分")
+A("以下关于VLAN的描述中，错误的是( )","A. 802.1Q帧最大长度1518字节","⚠️ 802.1Q加了4B标签，最大1522字节，不是1518","ch3","单选","dx","2.5分")
+A("数据链路层传输和处理数据的单位是( )","A. 帧","物理层=比特流；链路层=帧；网络层=数据报/分组；运输层=报文段","ch3","单选","dx","2.5分")
+A("1000Mb/s CSMA/CD，最小帧长256B，单向传播延时最多？","D. 1.024μs","最小帧长=带宽×RTT。256×8=1000×10⁶×2τ, τ=1.024μs","ch3","单选","dx","2.5分")
+A("1000Base-T以太网中的1000是指( )","C. 传输带宽为1000Mb/s","1000=速率，Base=基带，T=双绞线","ch3","单选","dx","2.5分")
+A("字符编码：A=01000111 B=11100011 ESC=11100000 FLAG=01111110。FLAG定界，ESC转义。传A,B,ESC,FLAG。面向比特，二进制序列？","D. 01111110 01000111 110100011 111000000 011111010 01111110","面向比特=零比特填充法：数据部分每5个连续1后插0","ch3","单选","dx","2.5分")
+A("交换表初始空，A→B数据帧后B→A确认帧，收到数据帧和确认帧的主机数？","D. 3,1","数据帧：表空→泛洪3台收到。确认帧：表已有记录→定向1台收到","ch3","单选","dx","2.5分")
+A("以太网卡实现的主要功能在( )","A. 物理层和数据链路层","网卡=物理层(电气信号)+数据链路层(MAC帧)","ch3","单选","dx","2.5分")
+A("10km,10Mb/s CSMA/CD以太网，传播200m/μs，最小帧长？","B. 1000bit","争用期=2×(10000/200)=100μs。帧长=10×10⁶×100×10⁻⁶=1000bit","ch3","单选","dx","2.5分")
+A("通过交换机连接的一组主机( )","B. 组成一个广播域，但不是一个冲突域","交换机隔离冲突域，不隔离广播域。路由器两者都隔离","ch3","单选","dx","2.5分")
+A("以太网退避算法中，11次碰撞后随机数范围0~x，x是？","C. 1023","k=min(11,10)=10, x=2^10-1=1023","ch3","单选","dx","2.5分")
+A("交换机交换表填空：A→D(交换表状态？转发端口？)","(1)写入(A,1) (2)2,3,4,5,6","表空→泛洪所有端口(除入口1)","ch3","填空","tk","24分")
+A("交换机交换表填空：D→A","(3)写入(D,4) (4)1","表已有A→定向转发到端口1","ch3","填空","tk","")
+A("交换机交换表填空：E→A","(5)写入(E,5) (6)1","表已有A→定向转发到端口1","ch3","填空","tk","")
+A("交换机交换表填空：A→E","(7)不变 (8)5","表已有A和E→定向转发到端口5","ch3","填空","tk","")
+A("使用CSMA/CD协议的以太网，最短帧长为____字节。","64","这是经典值，必须记住","ch3","填空","tk","3分")
+A("请简要分析CSMA/CD协议的工作原理。","(1)准备发送→先检测信道 (2)若忙则等待，空闲且96bit时间保持空闲则发送 (3)边发边听：成功→完成；碰撞→停发+干扰信号+指数退避，重传超16次报错","CSMA/CD=载波监听多路访问/冲突检测。先听后发，边发边听，冲突停发，随机重发","ch3","论述","ls","23分")
+
+// ====== Chapter 4 ======
+A("路由器转发IP数据报的依据是( )","B. IP数据报的目的IP地址和路由表中的路由表项","⚠️路由器用目的IP查路由表，不是MAC","ch4","单选","dx","1分")
+A("以下关于IPv4数据报结构的描述中，错误的是( )","B. 协议字段表示IP版本，值为4表示IPv4","协议字段指上层协议(TCP=6,UDP=17)，版本字段才是IP版本","ch4","单选","dx","1分")
+A("在IPv4数据报首部字段中，与分片和重组无关的是( )","D. 协议","分片相关：标识(同一数据报)、标志(DF/MF)、片偏移","ch4","单选","dx","1分")
+A("在RIP中，到某个网络的距离值为16，其意义是( )","A. 该网络不可达","RIP最大跳数15，16=不可达","ch4","单选","dx","1分")
+A("RIP：X→K距离N(N<15)，K将X做下一跳到Y的距离为？","C. N+1","RIP：收到邻居通告的距离+1=自己到目标的距离","ch4","单选","dx","1分")
+A("IPv4地址11000000 11111110 00001111 11110000的点分十进制是？","A. 192.254.15.240","每8位一组转十进制","ch4","单选","dx","1分")
+A("属于C类IPv4地址但不能分配给主机的是( )","B. 192.0.0.255","C类主机号全1=广播地址，不能分配","ch4","单选","dx","1分")
+A("172.16.0.0/255.255.224.0，最后一个子网的广播地址？","B. 172.16.255.255","/19=借3位=8个子网，最后一个子网广播地址","ch4","单选","dx","1分")
+A("IP 166.66.66.66/255.255.192.0，子网广播目的地址？","D. 166.66.127.255","/18，主机号全1=广播","ch4","单选","dx","1分")
+A("CIDR地址块10.0.0.0/10中的最后一个地址是( )","A. 10.63.255.255","/10，后22位全1","ch4","单选","dx","1分")
+A("路由聚合212.56.132~135.0/24，聚合后地址为？","D. 212.56.132.0/22","132~135=10000100~10000111，前22位相同","ch4","单选","dx","1分")
+A("可分配给主机的IPv4地址是( )","B. 110.47.10.0","A:网络地址；C:127环回；D:256非法","ch4","单选","dx","1分")
+A("4500字节TCP段(IPv4固定首部)，以太网传输，拆成几个IP片？","B. 4","MTU=1500，每片数据≤1480B。4500+20=4520，4520/1480→4片","ch4","单选","dx","1分")
+A("解决IPv4地址耗尽，治本措施是( )","C. 采用IPv6","CIDR/NAT都是过渡方案，IPv6是根本解决","ch4","单选","dx","1分")
+A("下列情况需要发送ARP请求的是( )","C. 需要发送但无目的IP-MAC映射","⚠️发送时找不到MAC才发ARP，接收不需要","ch4","单选","dx","1分")
+A("以下属于网络层范畴的是( )","C. IP地址","A=物理层 B=链路层 D=运输层","ch4","单选","dx","1分")
+A("TCP/IP协议栈中核心协议是( )","B. IP","IP是TCP/IP体系的核心，承上启下","ch4","单选","dx","1分")
+A("H1→H2，帧中源MAC和IP数据报中源IP分别是？","B. 00-a1-b2-c3-d4-61, 192.168.0.1","源/目的IP全程不变，源/目的MAC逐段改变","ch4","单选","dx","1分")
+A("RIP网络中A→B，TTL=64，B收到后TTL值为？","B. 61","经过3个路由器，TTL减3","ch4","单选","dx","1分")
+A("192.168.16.0/25均分两个子网，销售子网广播和技术子网网络地址？","B. 192.168.16.63, 192.168.16.64","均分→/26。销售0~63(广播63)，技术64~127(网络64)","ch4","单选","dx","1分")
+A("路由表查206.0.71.130的转发接口是？","B. S1","最长前缀匹配","ch4","单选","dx","1分")
+A("路由聚合(重复题)","D. 212.56.132.0/22","同Q11","ch4","单选","dx","1分")
+A("网络拓扑中设备1~3分别是？","C. 交换机、路由器、交换机","不同网络间=路由器，同网络内=交换机","ch4","单选","dx","1分")
+A("128.96.40.151查路由表，下一跳为？","D. R3","匹配0.0.0.0/0默认路由","ch4","单选","dx","1分")
+A("R1需增加路由(目的网络,掩码,下一跳)？","D. 192.168.0.0/255.255.255.0, 10.0.0.2","汇总两个子网→/24","ch4","单选","dx","1分")
+A("IP分组传输中(不考虑NAT)，首部中( )","A. 源IP和目的IP都不变","⚠️不考NAT时全程不变，只有MAC逐段变","ch4","单选","dx","1分")
+A("TCP/IP网际层含有4个重要协议( )","C. IP, ICMP, ARP, RARP","UDP/TCP是运输层","ch4","单选","dx","1分")
+A("不属于IP层实现的功能是( )","D. 确定主机进程间的接口","进程间接口=运输层(端口)","ch4","单选","dx","1分")
+A("RIP路由更新：A收到C发来信息后N1距离和下一跳？","(1)3 (2)C","C→N1距离2，A→C距离1，A通过C到N1=2+1=3，比原4小→更新","ch4","填空","tk","16分")
+A("RIP路由更新：N2距离和下一跳？","(3)2 (4)C","C→N2=1，A→C=1，总距离2，比原2不大→保持","ch4","填空","tk","")
+A("RIP路由更新：N3距离和下一跳？","(5)1 (6)F","C→N3=3，A→C=1，总距离4 > 原距离1→不更新，保持F","ch4","填空","tk","")
+A("RIP路由更新：N4距离和下一跳？","(7)5 (8)G","C→N4=7，A→C=1，总距离8 > 原距离5→不更新，保持G","ch4","填空","tk","")
+A("136.23.12.64/26 划分为4个一样大的子网：(1)前缀多长？(2)每子网多少地址？","(1)28位 (2)16个","/26借2位→/28。地址数=2^(32-28)=16","ch4","计算","js","10分")
+A("136.23.12.64/26划4子网：(3)子网地址块？","136.23.12.64/28, 136.23.12.80/28, 136.23.12.96/28, 136.23.12.112/28","每子网16地址，逐个递加","ch4","计算","js","")
+A("136.23.12.64/26划4子网：(4)每子网可用最小和最大地址？","子网1: .65~.78; 子网2: .81~.94; 子网3: .97~.110; 子网4: .113~.126","网络地址和广播地址不可用","ch4","计算","js","")
+A("CIDR分配：甲2000IP(起始202.0.0.0)的地址段和掩码？","202.0.0.0/21, 255.255.248.0","2000→需2048(/21), 范围202.0.0.0~202.0.7.255","ch4","简答","ls","8分")
+A("CIDR分配：乙4000IP(起始202.0.16.0)？","202.0.16.0/20, 255.255.240.0","4000→需4096(/20), 范围202.0.16.0~202.0.31.255","ch4","简答","ls","")
+A("CIDR分配：丙1000IP(起始202.0.8.0)？","202.0.8.0/22, 255.255.252.0","1000→需1024(/22), 范围202.0.8.0~202.0.11.255","ch4","简答","ls","")
+A("CIDR分配：丁1000IP(起始202.0.12.0)？","202.0.12.0/22, 255.255.252.0","1000→需1024(/22), 范围202.0.12.0~202.0.15.255","ch4","简答","ls","")
+A("3820B IP包穿越MTU=1420B网络，第1段：编号范围、片偏移、DF、MF？","0-1399, 片偏移=0, DF=0, MF=1","固定首部20B→每片数据≤1400B","ch4","计算","js","6分")
+A("3820B IP包分片：第2段？","1400-2799, 片偏移=175, DF=0, MF=1","片偏移=1400/8=175","ch4","计算","js","")
+A("3820B IP包分片：第3段？","2800-3799, 片偏移=350, DF=0, MF=0","最后一片MF=0","ch4","计算","js","")
+A("网络拓扑：202.118.1.0/24划两个≥120主机子网，子网划分结果？","202.118.1.0/25和202.118.1.128/25","120→需128地址→/25","ch4","论述","ls","16分")
+A("网络拓扑题：R2到局域网1和2的路由聚合？","202.118.1.0/24","两个/25聚合回/24","ch4","论述","ls","")
+A("阅读理解：设备1、2、3各是什么？","(1)路由器 (2)交换机 (3)交换机","路由器连接不同网络","ch4","阅读","yl","16分")
+A("阅读理解：哪些设备接口需配IP？分别是？","设备1(路由器)需要。IF1=192.168.1.254, IF2=192.168.1.1, IF3=192.168.1.65","交换机接口不需IP(二层设备)","ch4","阅读","yl","")
+A("阅读理解：R需提供什么服务让H1~H4访问Internet？","NAT(网络地址转换)","私有IP→公网IP","ch4","阅读","yl","")
+A("阅读理解：H3发192.168.1.127，哪些主机接收？","H4","192.168.1.127是H4所在子网的广播地址","ch4","阅读","yl","")
+
+// ====== Chapter 5 ======
+A("甲(SYN=1,seq=100)→乙建立TCP，乙接受请求的正确TCP段？","C. (SYN=1, ACK=1, seq=123, ack=101)","第二次握手：SYN=1,ACK=1,ack=seq+1=101,seq任意","ch5","单选","dx","3.4分")
+A("TCP三报文握手第一个报文SYN和ACK值？","D. 1, 0","第一次仅SYN=1，ACK=0","ch5","单选","dx","3.3分")
+A("GBN发送0~6，超时时收到1,2,4确认，需重传几个？","B. 2","累积确认：收到ack4=0~4已收，重传5和6","ch5","单选","dx","3.3分")
+A("TCP连接，甲1KB段持续发，乙窗口10KB。t时超时cwnd=16KB，10RTT后发送窗口？","C. 10KB","超时后cwnd=1，慢开始+拥塞避免，受接收窗口10KB限制","ch5","单选","dx","3.3分")
+A("关于UDP的叙述正确的是？I.网际层 II.无连接 III.可靠 IV.复用/分用","D. 仅II、IV","UDP是运输层，无连接，不可靠，提供复用/分用","ch5","单选","dx","3.4分")
+A("三次握手最后一个报文不带数据，连接建立后第一个数据报文序号？","A. 201","初始seq=200，第三次握手seq=201(不带数据)，第一个数据seq=201","ch5","单选","dx","3.4分")
+A("TCP第二次握手SYN和ACK值？","B. 1, 1","第二次：SYN=1, ACK=1(对第一次的确认)","ch5","单选","dx","3.4分")
+A("MSS=1KB,RTT=8ms,缓存32KB。从建立到发送窗口达16KB至少多少时间？","A. 32ms","cwnd: 1→2→4→8→16(慢开始)，4个RTT=32ms","ch5","单选","dx","3.4分")
+A("TCP报文段首部的最大长度为( )","B. 60字节","固定20B+选项最大40B=60B","ch5","单选","dx","3.3分")
+A("TCP一方发送FIN=1表示( )","B. 本方无数据发送但可接收对方数据","FIN是单方向释放，不是断开双方连接","ch5","单选","dx","3.4分")
+A("停等协议6kbps,单向时延100ms,利用率40%,分组长度？","C. 800比特","利用率=L/R/(L/R+2τ)→L=800bit","ch5","单选","dx","3.3分")
+A("TCP首部中有而UDP首部中没有的字段是( )","A. 序号","UDP首部只有：源端口、目的端口、长度、校验和","ch5","单选","dx","3.3分")
+A("甲收乙TCP段：seq=1024,ack=2048,载荷200B。甲回复的seq和ack？","D. 2048, 1224","甲seq=ack=2048; 甲ack=乙seq+载荷=1024+200=1224","ch5","单选","dx","3.3分")
+A("TCP/IP运输层端口号范围( )","A. 0~65535","16位端口号，0~65535","ch5","单选","dx","3.3分")
+A("TCP报文段首部中窗口字段的值( )","B. 指明自己的接收窗口的尺寸","窗口=接收方告诉发送方：我还能收多少","ch5","单选","dx","3.3分")
+A("TCP一方发送FIN=1(重复题)","C. 单方面释放连接","同Q10","ch5","单选","dx","3.4分")
+A("甲→乙3个TCP段(200B/300B/400B)，第3段seq=1000，仅收第1和第3段，确认号？","A. 700","seq1=1000-400-300=300(载荷200B), seq2=500(载荷300B)。正确收第1段→ack=500。只收第3段不累积","ch5","单选","dx","3.3分")
+A("OSI中自下而上第一个提供端到端服务的层次是( )","B. 传输层","同第1章Q10","ch5","单选","dx","3.3分")
+A("甲主动发起TCP连接(甲seq=2020,乙seq=1666)，第三次握手确认序号？","B. 1667","第三次ack=乙seq+1=1667","ch5","单选","dx","3.4分")
+A("TCP发送窗口大小取决于( )","B. 接收方允许的窗口和拥塞窗口","发送窗口=min(rwnd, cwnd)","ch5","单选","dx","3.3分")
+A("TCP序号字段的作用是( )","C. 指明数据载荷第一个字节的序号","序号=本报文段数据部分第一个字节的编号","ch5","单选","dx","3.3分")
+A("TCP第三次握手是什么？","D. 对TCP连接请求确认的确认","第一次=SYN请求，第二次=SYN+ACK确认，第三次=ACK确认确认","ch5","单选","dx","3.3分")
+A("MSS=1KB,RTT=1ms,cwnd从8KB→11KB最长时间？","A. 3ms","8→9→10→11(拥塞避免阶段，每RTT+1)，3个RTT","ch5","单选","dx","3.4分")
+A("下列不属于TCP特点的是( )","C. 支持广播","TCP是点对点全双工可靠协议，不支持广播","ch5","单选","dx","3.3分")
+A("停等协议中解决发送端永远等待(死锁)的办法是( )","D. 超时重传","收不到确认→超时→重传","ch5","单选","dx","3.3分")
+A("A收到确认号=100的TCP确认报文段，表示( )","D. 已收到最后一字节序号为99的报文段","确认号=期望收到的下一字节序号，所以100-1=99已收到","ch5","单选","dx","3.3分")
+A("熟知应用保留端口号范围( )","C. 0~1023","0~1023=熟知端口，1024~49151=注册端口","ch5","单选","dx","3.3分")
+A("TCP拥塞控制中cwnd达到什么值时线性增长？","B. 拥塞门槛ssthresh","⚠️ cwnd<ssthresh→慢开始(指数)；cwnd≥ssthresh→拥塞避免(线性)","ch5","单选","dx","3.4分")
+A("关于TCP超时重传时间RTO正确的是( )","A. RTO应略大于加权平均往返时间RTTs","太小→不必要重传；太大→响应慢","ch5","单选","dx","3.3分")
+A("实现进程间基于网络通信的是( )","A. 运输层","运输层=进程到进程；网络层=主机到主机","ch5","单选","dx","3.3分")
+
+// ====== Chapter 6 ======
+A("将域名转换为IP地址是由( )服务器完成的","C. DNS","DNS=Domain Name System","ch6","单选","dx","4分")
+A("万维网上的每个页面都有一个唯一的地址，统称为( )","B. 统一资源定位符(URL)","URL=协议+域名+路径","ch6","单选","dx","4分")
+A("在DNS递归查询中，最终返回IP地址的DNS服务器是( )","B. 最开始连接的服务器","递归查询：本地DNS替客户端一条龙查到底，原路返回","ch6","单选","dx","4分")
+A("HTTP是无状态协议，识别用户需要用到( )","A. Cookie","Cookie在客户端存储用户标识","ch6","单选","dx","4分")
+A("本地DNS不能解析→请求其他服务器→原路返回，这种查询方式称为？","C. 递归查询","递归=本地DNS替你查；迭代=本地DNS一步一步问","ch6","单选","dx","4分")
+A("以下不属于TCP/IP应用层范畴的是( )","A. UDP","UDP是运输层协议","ch6","单选","dx","4分")
+A("DNS的功能是( )","B. 根据域名查询IP地址","DNS=域名→IP。ARP=IP→MAC","ch6","单选","dx","4分")
+A("用户递归+本地DNS迭代，用户和本地DNS发送请求条数？","B. 1条, 多条","用户只发1条给本地DNS，本地DNS向多个服务器迭代查询","ch6","单选","dx","4分")
+A("DHCP DISCOVER报文IP数据报中源IP和目的IP分别是？","D. 0.0.0.0, 255.255.255.255","客户端尚无IP→源0.0.0.0，广播→255.255.255.255","ch6","单选","dx","4分")
+A("不能用于用户从邮件服务器接收电子邮件的协议是( )","D. SMTP","SMTP=发邮件；POP3/IMAP=收邮件","ch6","单选","dx","4分")
+A("以下关于FTP的描述中，错误的是( )","A. 控制连接客户端端口=20","FTP客户端控制连接用随机端口，服务器端控制=21,数据=20","ch6","单选","dx","4分")
+A("FTP客户和服务器间传递数据时使用的连接是( )","A. 建立在TCP之上的数据连接","FTP数据连接也是TCP","ch6","单选","dx","4分")
+A("通过SMTP协议发送邮件时，使用的运输层服务类型是( )","A. 有连接可靠的数据传输服务","⚠️ SMTP基于TCP，TCP是可靠有连接的！","ch6","单选","dx","4分")
+A("DHCP DISCOVER源IP和目的IP(重复题)","C. 0.0.0.0, 255.255.255.255","同Q9","ch6","单选","dx","4分")
+A("FTP客户发起连接的第一阶段是建立( )","A. 控制连接","FTP先建控制连接(21端口)，再按需建数据连接","ch6","单选","dx","4分")
+A("关于电子邮件系统协议正确的是( )","A. 发送通常用SMTP，接收通常用POP3","SMTP推送到服务器→POP3从服务器拉取","ch6","单选","dx","4分")
+A("用户提请求→服务器执行→返回结果，这种工作方式称？","A. C/S方式(客户端/服务器)","C/S和P2P是两种主要的网络应用架构","ch6","单选","dx","4分")
+A("下列协议中可用TCP/IP运输层面向连接服务的是( )","A. HTTP","HTTP基于TCP(面向连接)。DNS/DHCP基于UDP","ch6","单选","dx","4分")
+A("与域名具有一一对应关系的是( )","B. 以上都不是","⚠️域名可对应多个IP(负载均衡)，同一IP也可托管多个域名","ch6","单选","dx","4分")
+A("下列协议中不使用面向连接传输服务的是( )","C. DHCP","DHCP用UDP(无连接)。HTTP/FTP/SMTP都基于TCP","ch6","单选","dx","4分")
+A("FTP描述错误(重复题)","C. 客户端控制连接端口=20","同Q11","ch6","单选","dx","4分")
+A("DHCP的作用是( )","C. 使主机自动获取IP地址、默认网关等网络配置信息","DHCP=动态主机配置协议","ch6","单选","dx","4分")
+A("万维网页面唯一地址统称(重复题)","C. 统一资源定位符URL","同Q2","ch6","单选","dx","4分")
+A("使用浏览器访问某大学Web网站主页时，不可能使用到的协议是( )","C. SMTP","访问Web用HTTP/TCP/IP/ARP等，SMTP是发邮件的","ch6","单选","dx","4分")
+A("SMTP、POP3分别基于运输层的( )","D. TCP, TCP","两个都是基于TCP的，都是可靠传输","ch6","单选","dx","4分")
+
+// ====== State Management ======
+const CATEGORIES=[
+  {id:"all",label:"全部"},
+  {id:"ch1",label:"📡 第1章·概论"},
+  {id:"ch2",label:"⚡ 第2章·物理层"},
+  {id:"ch3",label:"🔗 第3章·链路层"},
+  {id:"ch4",label:"🌐 第4章·网络层"},
+  {id:"ch5",label:"📦 第5章·运输层"},
+  {id:"ch6",label:"💻 第6章·应用层"},
+];
+const SUBCATS=[
+  {id:"all",label:"全部题型"},
+  {id:"单选",label:"单选题"},
+  {id:"填空",label:"填空题"},
+  {id:"判断",label:"判断题"},
+  {id:"计算",label:"计算题"},
+  {id:"简答",label:"简答题"},
+  {id:"论述",label:"论述题"},
+  {id:"阅读",label:"阅读理解"},
+];
+let currentCat="all",currentSub="all",showMarked=false,currentIdx=0;
+let markedCards=new Set(JSON.parse(localStorage.getItem("net-hw-marked")||"[]"));
+let filteredCards=[];
+
+function getFilteredCards(){
+  let cards=showMarked?V.filter(c=>markedCards.has(c.en)):V;
+  if(showMarked&&cards.length===0&&markedCards.size===0){showMarked=false;cards=V;}
+  if(currentCat!=="all")cards=cards.filter(c=>c.cat===currentCat);
+  if(currentSub!=="all")cards=cards.filter(c=>c.sub===currentSub);
+  return cards;
+}
+function saveMarked(){localStorage.setItem("net-hw-marked",JSON.stringify([...markedCards]));}
+
+function renderCard(){
+  const card=document.getElementById("card");
+  card.style.transition="none";card.classList.remove("flipped");card.offsetHeight;
+  const animEls=document.querySelectorAll(".card-en,.card-zh");
+  animEls.forEach(el=>{el.style.animation="none";el.offsetHeight;el.style.animation="";});
+  if(filteredCards.length===0){
+    document.getElementById("cardTag").textContent="";document.getElementById("cardPoints").textContent="";
+    document.getElementById("cardIndex").textContent="";document.getElementById("cardEn").textContent="没有匹配的题目";
+    document.getElementById("cardZh").textContent="";document.getElementById("cardTip").textContent="";
+    document.getElementById("cardBadge").textContent="";document.getElementById("cardBadge").className="card-badge";
+    card.offsetHeight;card.style.transition="";updateProgress();return;
+  }
+  const item=filteredCards[currentIdx];
+  document.getElementById("cardTag").textContent=item.sub||"";
+  document.getElementById("cardPoints").textContent=item.pts||"";
+  document.getElementById("cardIndex").textContent=`${currentIdx+1}/${filteredCards.length}`;
+  const enEl=document.getElementById("cardEn");
+  enEl.textContent=item.en;
+  const len=item.en.length;
+  if(len>120)enEl.style.fontSize="0.8rem";
+  else if(len>80)enEl.style.fontSize="0.88rem";
+  else if(len>55)enEl.style.fontSize="0.95rem";
+  else if(len>35)enEl.style.fontSize="1.05rem";
+  else enEl.style.fontSize="1.15rem";
+
+  document.getElementById("cardZh").textContent=item.zh;
+  document.getElementById("cardTip").textContent=item.tip||"";
+  const badge=document.getElementById("cardBadge");
+  const bm={单选:"badge-dx",填空:"badge-tk",判断:"badge-pd",计算:"badge-js",简答:"badge-ls",论述:"badge-ls",阅读:"badge-yl"};
+  badge.className="card-badge "+(bm[item.sub]||"badge-dx");
+  const lm={单选:"单选题",填空:"填空题",判断:"判断题",计算:"计算题",简答:"简答题",论述:"论述题",阅读:"阅读理解"};
+  badge.textContent=lm[item.sub]||item.sub;
+  updateProgress();updateMarkBtn();
+  card.offsetHeight;card.style.transition="";
+}
+
+function updateProgress(){
+  const t=filteredCards.length,c=t===0?0:currentIdx+1;
+  document.getElementById("progressText").textContent=`${c}/${t}`;
+  document.getElementById("progressFill").style.width=t===0?"0%":`${(c/t)*100}%`;
+}
+function updateMarkBtn(){
+  const btn=document.getElementById("btnMark");
+  if(filteredCards.length===0){btn.textContent="☆ 收藏";btn.classList.remove("marked");return;}
+  const m=markedCards.has(filteredCards[currentIdx].en);
+  btn.textContent=m?"★ 已收藏":"☆ 收藏";btn.classList.toggle("marked",m);
+}
+function flipCard(){if(filteredCards.length)document.getElementById("card").classList.toggle("flipped");}
+function nextCard(){if(filteredCards.length){currentIdx=(currentIdx+1)%filteredCards.length;renderCard();}}
+function prevCard(){if(filteredCards.length){currentIdx=(currentIdx-1+filteredCards.length)%filteredCards.length;renderCard();}}
+function shuffleCards(){if(filteredCards.length){currentIdx=Math.floor(Math.random()*filteredCards.length);renderCard();}}
+function toggleMark(){
+  if(!filteredCards.length)return;
+  const item=filteredCards[currentIdx];
+  markedCards.has(item.en)?markedCards.delete(item.en):markedCards.add(item.en);
+  saveMarked();updateMarkBtn();
+}
+function showOnlyMarked(){
+  showMarked=!showMarked;
+  const btn=document.getElementById("btnShowMarked");
+  btn.textContent=showMarked?"📌 查看全部":"📌 仅看收藏";
+  btn.classList.toggle("marked",showMarked);
+  currentIdx=0;refreshAll();
+}
+function resetProgress(){currentIdx=0;document.getElementById("card").classList.remove("flipped");renderCard();}
+
+function refreshAll(){
+  filteredCards=getFilteredCards();
+  if(currentIdx>=filteredCards.length)currentIdx=0;
+  renderCategories();renderSubtabs();renderCard();updateProgress();updateMarkBtn();
+}
+function renderCategories(){
+  document.getElementById("categories").innerHTML=CATEGORIES.map(c=>
+    `<button class="cat-btn${currentCat===c.id?" active":""}" onclick="selectCat('${c.id}')">${c.label}</button>`
+  ).join("");
+}
+function renderSubtabs(){
+  document.getElementById("subtabs").innerHTML=SUBCATS.map(s=>
+    `<button class="subtab-btn${currentSub===s.id?" active":""}" onclick="selectSub('${s.id}')">${s.label}</button>`
+  ).join("");
+}
+function selectCat(id){currentCat=id;currentSub="all";currentIdx=0;refreshAll();}
+function selectSub(id){currentSub=id;currentIdx=0;refreshAll();}
+
+// Touch swipe
+let tsX=0,tsY=0;
+document.getElementById("cardContainer").addEventListener("touchstart",e=>{tsX=e.touches[0].clientX;tsY=e.touches[0].clientY;},{passive:true});
+document.getElementById("cardContainer").addEventListener("touchend",e=>{
+  const dx=e.changedTouches[0].clientX-tsX,dy=e.changedTouches[0].clientY-tsY;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){e.preventDefault();dx<0?nextCard():prevCard();}
+});
+
+// Keyboard
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;
+  switch(e.key){
+    case"ArrowLeft":prevCard();break;case"ArrowRight":nextCard();break;
+    case" ":e.preventDefault();flipCard();break;
+    case"s":case"S":toggleMark();break;case"r":case"R":shuffleCards();break;
+  }
+});
+
+function init(){
+  renderCategories();renderSubtabs();
+  filteredCards=getFilteredCards();renderCard();
+}
+init();
+</script>
+</body>
+</html>

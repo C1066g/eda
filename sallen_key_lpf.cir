@@ -1,0 +1,10 @@
+* Sallen-Key Low-Pass Filter — Butterworth, fc=1kHz, Q=0.707
+* Topology: unity-gain Sallen-Key with RC network
+V1 in 0 AC 1
+R1 in n1 11.3k
+R2 n1 n2 11.3k
+C1 n2 out 10n
+C2 n1 0 10n
+E1 out 0 n2 out 1e6
+.ac dec 100 10 100k
+.end

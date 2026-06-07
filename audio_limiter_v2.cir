@@ -1,0 +1,42 @@
+* Audio Limiter / Compressor
+* Threshold: When audio peak > 0.5V, attenuation kicks in (up to -20dB)
+
+Vin in 0 SIN(0 1.0 1k)
+
+* Signal Path: Buffer → Attenuator → Output
+Ebuf1 sig_in 0 in 0 1
+R_fix sig_in att_out 1k
+
+* JFET as voltage-controlled shunt (drain=att_out, gate=gate, source=0)
+J1 att_out gate 0 NJFET_VCR
+
+Ebuf2 out 0 att_out 0 1
+
+* Side-chain: precision rectifier (ideal half-wave)
+Esc sc_in 0 out 0 1
+Erect rect_out 0 VALUE = { V(sc_in) > 0 ? V(sc_in) : 0 }
+
+* Peak detector: fast attack, slow release
+D_peak rect_out peak_in IDEAL
+R_att peak_in peak 470
+C_peak peak 0 2.2u
+R_rel peak 0 47k
+
+* Error amp: Vth=0.5V, gain=5
+Eerr ctrl 0 VALUE = { 5 * LIMIT(0, V(peak) - 0.5, 1) }
+
+* Gate smoothing
+R_gate ctrl gate 10k
+C_gate gate 0 1u
+
+* Models
+.model IDEAL D(Is=1e-14 N=0.01 Rs=1m)
+.model NJFET_VCR NJF(VTO=-2 BETA=1m LAMBDA=0 RD=10 RS=10)
+
+.tran 0.01m 50m
+
+.control
+run
+.endc
+
+.end

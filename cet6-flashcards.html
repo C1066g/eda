@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CET-6 词汇闪卡 · 2026年6月</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F3F0EB;
+  --surface: #FFFFFF;
+  --surface2: #F8F6F2;
+  --border: #E0DBD3;
+  --border-light: #EAE6DF;
+  --text: #2D2B28;
+  --text2: #7A7670;
+  --text3: #B0ACA5;
+  --accent: #5B6FEF;
+  --accent-soft: rgba(91,111,239,0.08);
+  --accent-glow: rgba(91,111,239,0.12);
+  --green: #3DA06C;
+  --green-soft: rgba(61,160,108,0.1);
+  --amber: #D4920A;
+  --amber-soft: rgba(212,146,10,0.1);
+  --rose: #D9505C;
+  --rose-soft: rgba(217,80,92,0.1);
+  --purple: #7B5EC7;
+  --orange: #DC8648;
+  --radius: 16px;
+  --radius-sm: 8px;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 32px 24px;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  width: 100%;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+}
+
+/* Header */
+.header { text-align: center; margin-bottom: 4px; }
+.header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.header p { font-size: 0.75rem; color: var(--text2); margin-top: 2px; }
+
+/* Category pills */
+.categories {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.cat-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  background: var(--surface);
+  color: var(--text2);
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  white-space: nowrap;
+  font-family: inherit;
+}
+.cat-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.cat-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(91,111,239,0.2);
+}
+
+/* Sub-tabs */
+.subtabs {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.subtab-btn {
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  font-family: inherit;
+}
+.subtab-btn:hover { color: var(--text2); background: rgba(0,0,0,0.03); }
+.subtab-btn.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+
+/* Progress */
+.progress-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--border-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  transition: width 0.4s var(--ease);
+}
+.progress-text {
+  font-size: 0.72rem;
+  color: var(--text3);
+  min-width: 50px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* Flashcard */
+.card-container {
+  perspective: 1200px;
+  min-height: 300px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.card-container:hover .card:not(.flipped) {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+.card-container:active .card:not(.flipped) {
+  transform: scale(0.98);
+}
+.card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.5s var(--spring);
+  transform-style: preserve-3d;
+}
+.card.flipped { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 28px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02);
+  transition: box-shadow 0.3s var(--ease);
+}
+/* Subtle top accent line */
+.card-face::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 24px; right: 24px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(91,111,239,0.2), transparent);
+}
+.card-back {
+  transform: rotateY(180deg);
+  background: #FBFAF7;
+}
+/* Status left border */
+.card-face.status-known { border-left: 3px solid var(--green); }
+.card-face.status-unknown { border-left: 3px solid var(--rose); }
+
+/* Inner accent ring */
+.card-face::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: calc(var(--radius) - 4px);
+  border: 1px solid rgba(0,0,0,0.04);
+  pointer-events: none;
+}
+
+/* Front label */
+.card-tag {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  font-size: 0.65rem;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+.card-index {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 0.68rem;
+  color: var(--text3);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* Front: English */
+.card-en {
+  font-size: 1.45rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  word-break: break-word;
+  color: var(--text);
+  padding: 0 4px;
+}
+
+/* Back: Chinese + usage */
+.card-zh {
+  font-size: 1.4rem;
+  font-weight: 650;
+  text-align: center;
+  color: var(--text);
+  margin-bottom: 6px;
+  padding: 0 4px;
+}
+.card-tip {
+  font-size: 0.78rem;
+  color: var(--text2);
+  text-align: center;
+  line-height: 1.5;
+  margin-top: 6px;
+  max-width: 90%;
+}
+.card-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-top: 12px;
+  letter-spacing: 0.02em;
+}
+.badge-writing { background: rgba(91,111,239,0.1); color: var(--accent); }
+.badge-translation { background: rgba(212,146,10,0.1); color: var(--amber); }
+.badge-reading { background: rgba(217,80,92,0.1); color: var(--rose); }
+.badge-sentence { background: rgba(61,160,108,0.1); color: var(--green); }
+.badge-other { background: rgba(0,0,0,0.05); color: var(--text2); }
+.badge-synonym { background: rgba(123,94,199,0.1); color: var(--purple); }
+.badge-phrase { background: rgba(61,160,108,0.1); color: var(--green); }
+.badge-connector { background: rgba(220,134,72,0.1); color: var(--orange); }
+
+/* Nav */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.nav-btn {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--border-light);
+  background: var(--surface);
+  color: var(--text2);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.nav-btn:hover {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 2px 8px rgba(91,111,239,0.12);
+}
+.nav-btn:active { transform: scale(0.93); }
+
+.nav-primary {
+  padding: 10px 26px;
+  border-radius: 22px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 10px rgba(91,111,239,0.2);
+}
+.nav-primary:hover {
+  background: #4A5EDB;
+  box-shadow: 0 4px 16px rgba(91,111,239,0.3);
+  transform: translateY(-1px);
+}
+.nav-primary:active { transform: scale(0.96); }
+
+/* Know / Unknown buttons */
+.know-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+.know-btn {
+  flex: 1;
+  max-width: 180px;
+  padding: 11px 20px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border-light);
+  background: var(--surface);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+.know-yes { color: var(--green); }
+.know-yes:hover { background: var(--green-soft); border-color: var(--green); }
+.know-yes:active { transform: scale(0.96); }
+.know-yes.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+.know-no { color: var(--rose); }
+.know-no:hover { background: var(--rose-soft); border-color: var(--rose); }
+.know-no:active { transform: scale(0.96); }
+.know-no.active { background: var(--rose); color: #fff; border-color: var(--rose); }
+
+/* Stats bar */
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 0.7rem;
+  color: var(--text2);
+  font-weight: 500;
+}
+.stats-row span { display: flex; align-items: center; gap: 4px; }
+.stats-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.stats-dot.known { background: var(--green); }
+.stats-dot.unknown { background: var(--rose); }
+.stats-dot.remaining { background: #C5C0B8; }
+
+/* Actions row */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.action-btn {
+  padding: 6px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--border-light);
+  background: var(--surface);
+  color: var(--text2);
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  font-family: inherit;
+}
+.action-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.action-btn.marked { background: var(--amber-soft); color: var(--amber); border-color: rgba(212,146,10,0.2); }
+.action-btn.quiz-active { background: var(--accent-soft); color: var(--accent); border-color: rgba(91,111,239,0.25); }
+
+/* Keyboard hints */
+.kbd-hints {
+  text-align: center;
+  font-size: 0.65rem;
+  color: var(--text3);
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.kbd-hints kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-light);
+  background: rgba(0,0,0,0.03);
+  font-family: inherit;
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: var(--text3);
+}
+
+/* Fade-in animation */
+@keyframes cardIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.card-en, .card-zh { animation: cardIn 0.35s var(--ease); }
+
+/* Responsive */
+@media (max-width: 480px) {
+  body { padding: 16px 12px; align-items: flex-start; }
+  .card-container { min-height: 260px; }
+  .card-en { font-size: 1.1rem !important; }
+  .card-zh { font-size: 1.1rem; }
+  .card-face { padding: 20px 16px; }
+  .app { gap: 12px; }
+  .cat-btn { padding: 5px 10px; font-size: 0.66rem; }
+  .nav-btn { width: 38px; height: 38px; }
+  .nav-primary { padding: 8px 20px; font-size: 0.8rem; }
+  .know-btn { padding: 10px 14px; font-size: 0.8rem; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>CET-6 词汇闪卡</h1>
+    <p>2026年6月 · 预测高频词汇</p>
+  </div>
+
+  <div class="categories" id="categories"></div>
+  <div class="subtabs" id="subtabs"></div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-text" id="progressText">0/0</span>
+  </div>
+
+  <div class="card-container" id="cardContainer" onclick="flipCard()">
+    <div class="card" id="card">
+      <div class="card-face card-front">
+        <span class="card-tag" id="cardTag"></span>
+        <span class="card-index" id="cardIndex"></span>
+        <div class="card-en" id="cardEn"></div>
+      </div>
+      <div class="card-face card-back">
+        <div class="card-zh" id="cardZh"></div>
+        <div class="card-tip" id="cardTip"></div>
+        <span class="card-badge" id="cardBadge"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn" onclick="prevCard()" title="上一张 (←)">◀</button>
+    <button class="nav-primary" onclick="shuffleCards()" title="随机打乱">🔀 随机</button>
+    <button class="nav-btn" onclick="nextCard()" title="下一张 (→)">▶</button>
+  </div>
+
+  <div class="know-row">
+    <button class="know-btn know-yes" id="btnKnowYes" onclick="markKnown()">✓ 我会了</button>
+    <button class="know-btn know-no" id="btnKnowNo" onclick="markUnknown()">✗ 不会</button>
+  </div>
+
+  <div class="stats-row" id="statsRow">
+    <span><span class="stats-dot known"></span> 已掌握 <strong id="statKnown">0</strong></span>
+    <span><span class="stats-dot unknown"></span> 待复习 <strong id="statUnknown">0</strong></span>
+    <span><span class="stats-dot remaining"></span> 未标记 <strong id="statRemaining">0</strong></span>
+  </div>
+
+  <div class="actions">
+    <button class="action-btn" id="btnMark" onclick="toggleMark()">☆ 收藏</button>
+    <button class="action-btn" onclick="showOnlyMarked()" id="btnShowMarked">📌 仅看收藏</button>
+    <button class="action-btn" id="btnHideKnown" onclick="toggleHideKnown()">👁 隐藏已掌握</button>
+    <button class="action-btn" id="btnOnlyUnknown" onclick="toggleOnlyUnknown()">🎯 只看待复习</button>
+    <button class="action-btn" id="btnQuiz" onclick="toggleQuiz()">📝 小测</button>
+    <button class="action-btn" id="btnReverse" onclick="toggleReverse()">🔤 中⇄英</button>
+    <button class="action-btn" onclick="resetProgress()">↺ 重置</button>
+  </div>
+
+  <div class="kbd-hints">
+    <span><kbd>←</kbd> <kbd>→</kbd> 翻页</span>
+    <span><kbd>Space</kbd> 翻转</span>
+    <span><kbd>S</kbd> 收藏</span>
+    <span><kbd>K</kbd> 我会了</span>
+    <span><kbd>N</kbd> 不会</span>
+  </div>
+</div>
+
+<script>
+// ====== 词汇数据（从 Markdown 提取） ======
+const VOCAB_DATA = [
+  // === 一、AI 与数字时代 ===
+  // 作文高频词
+  {en:"artificial intelligence (AI)", zh:"人工智能", tip:"话题引入必用", cat:"ai", sub:"作文", type:"writing"},
+  {en:"double-edged sword", zh:"双刃剑", tip:"辩证开头", cat:"ai", sub:"作文", type:"writing"},
+  {en:"over-reliance (on)", zh:"过度依赖", tip:"AI 的弊端", cat:"ai", sub:"作文", type:"writing"},
+  {en:"independent thinking", zh:"独立思考", tip:"AI 的对立面", cat:"ai", sub:"作文", type:"writing"},
+  {en:"critical thinking", zh:"批判性思维", tip:"教育类高频", cat:"ai", sub:"作文", type:"writing"},
+  {en:"digital literacy", zh:"数字素养", tip:"大学生能力", cat:"ai", sub:"作文", type:"writing"},
+  {en:"human-computer interaction", zh:"人机交互", tip:"高端替换", cat:"ai", sub:"作文", type:"writing"},
+  {en:"cognitive ability", zh:"认知能力", tip:"独立思维同义", cat:"ai", sub:"作文", type:"writing"},
+  {en:"information overload", zh:"信息过载", tip:"数字时代弊端", cat:"ai", sub:"作文", type:"writing"},
+  {en:"algorithm bias", zh:"算法偏见", tip:"深度观点", cat:"ai", sub:"作文", type:"writing"},
+  {en:"data privacy", zh:"数据隐私", tip:"伦理角度", cat:"ai", sub:"作文", type:"writing"},
+  {en:"academic integrity", zh:"学术诚信", tip:"AI 写论文话题", cat:"ai", sub:"作文", type:"writing"},
+  {en:"technological convenience", zh:"技术便利", tip:"让步段用", cat:"ai", sub:"作文", type:"writing"},
+  {en:"at the cost of", zh:"以…为代价", tip:"转折连接", cat:"ai", sub:"作文", type:"writing"},
+  {en:"strike a balance (between)", zh:"在…之间取得平衡", tip:"结论升华", cat:"ai", sub:"作文", type:"writing"},
+  // 翻译高频词
+  {en:"digital government services", zh:"数字政务服务", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"smart learning platform", zh:"智慧学习平台", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"facial recognition", zh:"人脸识别", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"big data analytics", zh:"大数据分析", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"cloud computing", zh:"云计算", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"Internet of Things (IoT)", zh:"物联网", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"digital transformation", zh:"数字化转型", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"online education / e-learning", zh:"在线教育", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"virtual reality (VR)", zh:"虚拟现实", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"generative AI", zh:"生成式人工智能", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"machine translation", zh:"机器翻译", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"smart campus", zh:"智慧校园", tip:"", cat:"ai", sub:"翻译", type:"translation"},
+  // 阅读高频词
+  {en:"algorithm", zh:"算法", tip:"", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"automation", zh:"自动化", tip:"", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"surveillance", zh:"监控", tip:"", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"cybersecurity", zh:"网络安全", tip:"", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"disinformation", zh:"虚假信息", tip:"", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"ethical dilemma", zh:"伦理困境", tip:"", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"technological unemployment", zh:"技术性失业", tip:"", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"digital divide", zh:"数字鸿沟", tip:"", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"data breach", zh:"数据泄露", tip:"", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"intellectual property", zh:"知识产权", tip:"", cat:"ai", sub:"阅读", type:"reading"},
+
+  // === 二、绿色低碳 ===
+  {en:"carbon neutrality", zh:"碳中和", tip:"政策背景", cat:"green", sub:"作文", type:"writing"},
+  {en:"carbon peak / carbon peaking", zh:"碳达峰", tip:"中国目标", cat:"green", sub:"作文", type:"writing"},
+  {en:"low-carbon lifestyle", zh:"低碳生活方式", tip:"个人行动", cat:"green", sub:"作文", type:"writing"},
+  {en:"sustainable development", zh:"可持续发展", tip:"万能主旨", cat:"green", sub:"作文", type:"writing"},
+  {en:"circular economy", zh:"循环经济", tip:"高级替换", cat:"green", sub:"作文", type:"writing"},
+  {en:"green campus", zh:"绿色校园", tip:"大学生场景", cat:"green", sub:"作文", type:"writing"},
+  {en:"environmental awareness", zh:"环保意识", tip:"论述必备", cat:"green", sub:"作文", type:"writing"},
+  {en:"eco-friendly", zh:"环保的", tip:"形容词替换", cat:"green", sub:"作文", type:"writing"},
+  {en:"renewable energy", zh:"可再生能源", tip:"举例用", cat:"green", sub:"作文", type:"writing"},
+  {en:"disposable / single-use", zh:"一次性的", tip:"批判对象", cat:"green", sub:"作文", type:"writing"},
+  {en:"biodegradable", zh:"可生物降解的", tip:"解决方案", cat:"green", sub:"作文", type:"writing"},
+  {en:"carbon footprint", zh:"碳足迹", tip:"个人责任", cat:"green", sub:"作文", type:"writing"},
+  {en:"conserve resources", zh:"节约资源", tip:"建议措施", cat:"green", sub:"作文", type:"writing"},
+  {en:"leave no trace", zh:"不留痕迹", tip:"户外/旅游场景", cat:"green", sub:"作文", type:"writing"},
+  {en:"take concrete actions", zh:"采取具体行动", tip:"倡议收尾", cat:"green", sub:"作文", type:"writing"},
+  // 翻译
+  {en:"new energy vehicle (NEV)", zh:"新能源汽车", tip:"", cat:"green", sub:"翻译", type:"translation"},
+  {en:"solar power / photovoltaic", zh:"太阳能 / 光伏", tip:"", cat:"green", sub:"翻译", type:"translation"},
+  {en:"wind power", zh:"风能", tip:"", cat:"green", sub:"翻译", type:"translation"},
+  {en:"waste sorting / garbage classification", zh:"垃圾分类", tip:"", cat:"green", sub:"翻译", type:"translation"},
+  {en:"ecological conservation", zh:"生态保护", tip:"", cat:"green", sub:"翻译", type:"translation"},
+  {en:"emission reduction", zh:"减排", tip:"", cat:"green", sub:"翻译", type:"translation"},
+  {en:"green finance", zh:"绿色金融", tip:"", cat:"green", sub:"翻译", type:"translation"},
+  {en:"ecological compensation", zh:"生态补偿", tip:"", cat:"green", sub:"翻译", type:"translation"},
+  {en:"afforestation", zh:"植树造林", tip:"", cat:"green", sub:"翻译", type:"translation"},
+  {en:"plastic ban", zh:"限塑令", tip:"", cat:"green", sub:"翻译", type:"translation"},
+  {en:"shared mobility", zh:"共享出行", tip:"", cat:"green", sub:"翻译", type:"translation"},
+  // 阅读
+  {en:"biodiversity", zh:"生物多样性", tip:"", cat:"green", sub:"阅读", type:"reading"},
+  {en:"ecosystem", zh:"生态系统", tip:"", cat:"green", sub:"阅读", type:"reading"},
+  {en:"fossil fuel", zh:"化石燃料", tip:"", cat:"green", sub:"阅读", type:"reading"},
+  {en:"carbon emission", zh:"碳排放", tip:"", cat:"green", sub:"阅读", type:"reading"},
+  {en:"climate change mitigation", zh:"气候变化减缓", tip:"", cat:"green", sub:"阅读", type:"reading"},
+  {en:"deforestation", zh:"森林砍伐", tip:"", cat:"green", sub:"阅读", type:"reading"},
+  {en:"overconsumption", zh:"过度消费", tip:"", cat:"green", sub:"阅读", type:"reading"},
+  {en:"fast fashion", zh:"快时尚（环保语境）", tip:"", cat:"green", sub:"阅读", type:"reading"},
+  {en:"marine pollution", zh:"海洋污染", tip:"", cat:"green", sub:"阅读", type:"reading"},
+  {en:"microplastics", zh:"微塑料", tip:"", cat:"green", sub:"阅读", type:"reading"},
+
+  // === 三、文化传承 ===
+  {en:"cultural confidence", zh:"文化自信", tip:"立场金句", cat:"culture", sub:"作文", type:"writing"},
+  {en:"intangible cultural heritage", zh:"非物质文化遗产", tip:"翻译/作文通用", cat:"culture", sub:"作文", type:"writing"},
+  {en:"national tide / guochao", zh:"国潮", tip:"现象描述", cat:"culture", sub:"作文", type:"writing"},
+  {en:"cultural inheritance", zh:"文化传承", tip:"主旨词", cat:"culture", sub:"作文", type:"writing"},
+  {en:"cultural identity", zh:"文化认同", tip:"深度论述", cat:"culture", sub:"作文", type:"writing"},
+  {en:"pass down from generation to generation", zh:"代代相传", tip:"翻译必备", cat:"culture", sub:"作文", type:"writing"},
+  {en:"revitalize traditional culture", zh:"复兴传统文化", tip:"建议措施", cat:"culture", sub:"作文", type:"writing"},
+  {en:"digital communication", zh:"数字化传播", tip:"创新手段", cat:"culture", sub:"作文", type:"writing"},
+  {en:"cross-cultural exchange", zh:"跨文化交流", tip:"国际视野", cat:"culture", sub:"作文", type:"writing"},
+  {en:"go global / go overseas", zh:"出海/走向世界", tip:"文化输出", cat:"culture", sub:"作文", type:"writing"},
+  {en:"craftsmanship spirit", zh:"工匠精神", tip:"非遗语境", cat:"culture", sub:"作文", type:"writing"},
+  {en:"modern twist", zh:"现代演绎", tip:"传统+创新", cat:"culture", sub:"作文", type:"writing"},
+  {en:"time-honored brand", zh:"老字号", tip:"国潮案例", cat:"culture", sub:"作文", type:"writing"},
+  {en:"bridge the past and present", zh:"连接古今", tip:"升华句", cat:"culture", sub:"作文", type:"writing"},
+  // 翻译
+  {en:"paper-cutting", zh:"剪纸", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"Peking Opera", zh:"京剧", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"calligraphy", zh:"书法", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"embroidery", zh:"刺绣", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"porcelain / ceramics", zh:"陶瓷", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"mortise and tenon (structure)", zh:"榫卯结构", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"traditional Chinese medicine (TCM)", zh:"中医", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"Spring Festival / Chinese New Year", zh:"春节", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"Mid-Autumn Festival", zh:"中秋节", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"Dragon Boat Festival", zh:"端午节", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"lunar calendar", zh:"农历", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"live streaming", zh:"直播", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"digital museum", zh:"数字博物馆", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"short video platform", zh:"短视频平台", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"cultural and creative products", zh:"文创产品", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"the Belt and Road Initiative", zh:"一带一路", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"rural vitalization / rural revitalization", zh:"乡村振兴", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"livestream commerce / e-commerce", zh:"直播带货", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"technology empowers agriculture", zh:"科技助农", tip:"", cat:"culture", sub:"翻译", type:"translation"},
+  // 阅读
+  {en:"heritage preservation", zh:"遗产保护", tip:"", cat:"culture", sub:"阅读", type:"reading"},
+  {en:"cultural appropriation", zh:"文化挪用", tip:"", cat:"culture", sub:"阅读", type:"reading"},
+  {en:"commercialization of culture", zh:"文化商业化", tip:"", cat:"culture", sub:"阅读", type:"reading"},
+  {en:"globalization vs. localization", zh:"全球化与本土化", tip:"", cat:"culture", sub:"阅读", type:"reading"},
+  {en:"folk art", zh:"民间艺术", tip:"", cat:"culture", sub:"阅读", type:"reading"},
+  {en:"cultural diversity", zh:"文化多样性", tip:"", cat:"culture", sub:"阅读", type:"reading"},
+  {en:"UNESCO World Heritage", zh:"联合国教科文组织世界遗产", tip:"", cat:"culture", sub:"阅读", type:"reading"},
+  {en:"cultural tourism", zh:"文化旅游", tip:"", cat:"culture", sub:"阅读", type:"reading"},
+  {en:"grassroots cultural revival", zh:"民间文化复兴", tip:"", cat:"culture", sub:"阅读", type:"reading"},
+
+  // === 四、社会热点 ===
+  {en:"mental health", zh:"心理健康", tip:"作文", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"psychological resilience", zh:"心理韧性 / 抗压能力", tip:"作文", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"involution / rat race", zh:"内卷", tip:"作文", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"lying flat (tangping)", zh:"躺平", tip:"作文", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"work-life balance", zh:"工作生活平衡", tip:"作文", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"career planning", zh:"职业规划", tip:"作文/翻译", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"lifelong learning", zh:"终身学习", tip:"作文", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"gig economy", zh:"零工经济", tip:"阅读", cat:"social", sub:"心理/职业", type:"reading"},
+  {en:"new forms of employment", zh:"新就业形态", tip:"翻译", cat:"social", sub:"心理/职业", type:"translation"},
+  {en:"delayed employment", zh:"慢就业", tip:"作文", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"graduate school craze", zh:"考研热", tip:"作文", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"civil service exam fever", zh:"考公热", tip:"作文", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"innovation and entrepreneurship", zh:"创新创业", tip:"作文", cat:"social", sub:"心理/职业", type:"writing"},
+
+  // === 五、万能句式 ===
+  {en:"In recent years, ... has become a subject of heated debate.", zh:"近年来…已成为热议话题", tip:"开头·引入话题", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"With the rapid advancement of ..., ... has emerged as a pressing concern.", zh:"随着…的快速发展，…已成为紧迫问题", tip:"开头·引入话题", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"There is a growing concern over ...", zh:"人们越来越关注…", tip:"开头·引入话题", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"The phenomenon that ... has aroused wide public concern.", zh:"…现象已引起广泛社会关注", tip:"开头·引入话题", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"While it is true that ..., we should not overlook its potential drawbacks.", zh:"尽管…确实如此，但我们不应忽视其潜在弊端", tip:"辩证转折", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"Admittedly, ... brings unprecedented convenience; however, ...", zh:"不可否认，…带来前所未有的便利；然而…", tip:"辩证转折", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"... is a double-edged sword that requires careful handling.", zh:"…是把双刃剑，需谨慎对待", tip:"辩证转折", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"The key lies not in rejecting ..., but in learning to ...", zh:"关键不在于拒绝…，而在于学会…", tip:"辩证转折", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"First and foremost, ... plays an indispensable role in ...", zh:"首先，…在…中扮演不可或缺的角色", tip:"分论点展开", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"Another factor worth noting is that ...", zh:"另一个值得注意的因素是…", tip:"分论点展开", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"A case in point is ...", zh:"一个典型案例是…", tip:"分论点展开", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"This is best illustrated by the example of ...", zh:"…就是最好的例证", tip:"分论点展开", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"It is high time that we took concrete measures to ...", zh:"我们早该采取具体措施来…", tip:"建议与结论", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"Only by striking a balance between ... and ... can we ...", zh:"只有在…与…之间取得平衡，我们才能…", tip:"建议与结论", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"Both individuals and society as a whole should contribute to ...", zh:"个人和社会整体都应为…贡献力量", tip:"建议与结论", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"The journey ahead is long, but action starts with each of us.", zh:"道阻且长，行则将至", tip:"建议与结论", cat:"sentence", sub:"句式", type:"sentence"},
+
+  // === 六、翻译句式 ===
+  {en:"..., which has a history of over ... years, ...", zh:"已有超过…年的历史", tip:"翻译·介绍非遗/传统", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"Not only does ..., but it also ...", zh:"不仅…而且…", tip:"翻译·双重功能/意义", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"It is widely regarded as ...", zh:"被广泛认为是…", tip:"翻译·公认评价", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"... plays a vital role in ...", zh:"在…中发挥至关重要的作用", tip:"翻译·重要性", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"With the advent of ..., ... has undergone profound changes.", zh:"随着…的出现，…发生了深刻变化", tip:"翻译·时代背景引入", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"... can be traced back to ...", zh:"可追溯至…", tip:"翻译·溯源", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"In recent decades, ... has gained increasing popularity among ...", zh:"近几十年来，…在…中越来越受欢迎", tip:"翻译·现代发展趋势", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"Thanks to / Due to ..., ... has been able to ...", zh:"由于…，…得以…", tip:"翻译·归因于", cat:"sentence", sub:"句式", type:"sentence"},
+  {en:"It is characterized by ...", zh:"其特点是…", tip:"翻译·特征描述", cat:"sentence", sub:"句式", type:"sentence"},
+
+  // === 补充：AI 与数字时代（扩展） ===
+  {en:"machine learning", zh:"机器学习", tip:"AI 核心技术", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"deep learning", zh:"深度学习", tip:"AI 核心技术", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"quantum computing", zh:"量子计算", tip:"前沿科技", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"blockchain", zh:"区块链", tip:"翻译可能涉及", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"core technologies in key fields", zh:"关键核心技术", tip:"高频术语", cat:"ai", sub:"翻译", type:"translation"},
+  {en:"AI-driven automation", zh:"AI 驱动的自动化", tip:"阅读热点", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"natural language processing (NLP)", zh:"自然语言处理", tip:"AI 子领域", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"technological singularity", zh:"技术奇点", tip:"深度话题", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"human-machine collaboration", zh:"人机协作", tip:"辩证观点", cat:"ai", sub:"作文", type:"writing"},
+  {en:"tech-savvy", zh:"精通科技的", tip:"形容词", cat:"ai", sub:"作文", type:"writing"},
+  {en:"screen addiction", zh:"屏幕成瘾", tip:"数字时代弊端", cat:"ai", sub:"作文", type:"writing"},
+  {en:"filter bubble", zh:"信息茧房", tip:"算法推荐问题", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"tech giant", zh:"科技巨头", tip:"阅读常考", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"open-source", zh:"开源的", tip:"科技语境", cat:"ai", sub:"阅读", type:"reading"},
+  {en:"digital detox", zh:"数字排毒/戒断数字设备", tip:"新兴概念", cat:"ai", sub:"作文", type:"writing"},
+
+  // === 补充：绿色低碳（扩展） ===
+  {en:"greenhouse gas emissions", zh:"温室气体排放", tip:"环保核心概念", cat:"green", sub:"作文", type:"writing"},
+  {en:"ecological balance", zh:"生态平衡", tip:"阅读高频", cat:"green", sub:"阅读", type:"reading"},
+  {en:"solar power generation", zh:"太阳能发电", tip:"举例/翻译", cat:"green", sub:"翻译", type:"translation"},
+  {en:"wind farm", zh:"风力发电场", tip:"举例/翻译", cat:"green", sub:"翻译", type:"translation"},
+  {en:"energy conservation", zh:"节能减排", tip:"政策高频", cat:"green", sub:"作文", type:"writing"},
+  {en:"environmental degradation", zh:"环境退化", tip:"高级表达", cat:"green", sub:"作文", type:"writing"},
+  {en:"environmental protection regulations", zh:"环保法规", tip:"翻译", cat:"green", sub:"翻译", type:"translation"},
+  {en:"green technology / green tech", zh:"绿色科技", tip:"创新话题", cat:"green", sub:"翻译", type:"translation"},
+  {en:"zero-waste lifestyle", zh:"零废弃生活", tip:"新兴概念", cat:"green", sub:"作文", type:"writing"},
+  {en:"energy-efficient", zh:"节能的", tip:"形容词", cat:"green", sub:"阅读", type:"reading"},
+  {en:"extreme weather events", zh:"极端天气事件", tip:"气候变化", cat:"green", sub:"阅读", type:"reading"},
+  {en:"polar ice melt", zh:"极地冰融", tip:"气候变化", cat:"green", sub:"阅读", type:"reading"},
+  {en:"endangered species", zh:"濒危物种", tip:"生态保护", cat:"green", sub:"阅读", type:"reading"},
+  {en:"sustainable fashion", zh:"可持续时尚", tip:"环保+消费", cat:"green", sub:"作文", type:"writing"},
+  {en:"environmental footprint", zh:"环境足迹", tip:"= carbon footprint 升级", cat:"green", sub:"作文", type:"writing"},
+
+  // === 补充：文化传承（扩展） ===
+  {en:"cultural heritage preservation", zh:"文化遗产保护", tip:"高频主题", cat:"culture", sub:"作文", type:"writing"},
+  {en:"living inheritance", zh:"活态传承", tip:"非遗翻译必备", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"traditional craftsmanship", zh:"传统手工艺", tip:"非遗翻译", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"Chinese knot", zh:"中国结", tip:"翻译常见", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"Dunhuang Mogao Grottoes", zh:"敦煌莫高窟", tip:"翻译真题", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"folk custom", zh:"民间习俗", tip:"翻译常见", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"cultural integration / cultural fusion", zh:"文化融合", tip:"深度话题", cat:"culture", sub:"作文", type:"writing"},
+  {en:"cultural soft power", zh:"文化软实力", tip:"高端观点", cat:"culture", sub:"作文", type:"writing"},
+  {en:"ancient wisdom", zh:"古人智慧", tip:"传统文化语境", cat:"culture", sub:"作文", type:"writing"},
+  {en:"cultural renaissance", zh:"文化复兴", tip:"国潮语境", cat:"culture", sub:"作文", type:"writing"},
+  {en:"Sino-foreign cultural exchange", zh:"中外文化交流", tip:"翻译", cat:"culture", sub:"翻译", type:"translation"},
+  {en:"traditional values", zh:"传统价值观", tip:"论述用", cat:"culture", sub:"作文", type:"writing"},
+  {en:"cultural preservation vs. modernization", zh:"文化保护与现代化", tip:"辩证话题", cat:"culture", sub:"作文", type:"writing"},
+
+  // === 补充：社会热点（扩展） ===
+  {en:"aging population / aging society", zh:"人口老龄化", tip:"社会议题", cat:"social", sub:"心理/职业", type:"translation"},
+  {en:"social mobility", zh:"社会流动性", tip:"阅读", cat:"social", sub:"心理/职业", type:"reading"},
+  {en:"income inequality", zh:"收入不平等", tip:"阅读热门", cat:"social", sub:"心理/职业", type:"reading"},
+  {en:"remote work / telecommuting", zh:"远程办公", tip:"新兴工作方式", cat:"social", sub:"心理/职业", type:"translation"},
+  {en:"gig worker", zh:"灵活就业者/零工", tip:"阅读", cat:"social", sub:"心理/职业", type:"reading"},
+  {en:"social security system", zh:"社会保障体系", tip:"翻译", cat:"social", sub:"心理/职业", type:"translation"},
+  {en:"self-media / we-media", zh:"自媒体", tip:"数字时代", cat:"social", sub:"心理/职业", type:"translation"},
+  {en:"online celebrity economy", zh:"网红经济", tip:"社会现象", cat:"social", sub:"心理/职业", type:"translation"},
+  {en:"knowledge payment", zh:"知识付费", tip:"新经济", cat:"social", sub:"心理/职业", type:"translation"},
+  {en:"sharing economy", zh:"共享经济", tip:"翻译常考", cat:"social", sub:"心理/职业", type:"translation"},
+  {en:"intergenerational gap", zh:"代沟", tip:"社会话题", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"peer pressure", zh:"同辈压力", tip:"心理话题", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"instant gratification", zh:"即时满足", tip:"社会现象分析", cat:"social", sub:"心理/职业", type:"writing"},
+  {en:"mindfulness", zh:"正念/专注当下", tip:"心理热词", cat:"social", sub:"心理/职业", type:"reading"},
+  {en:"emotional intelligence (EQ)", zh:"情商", tip:"教育/心理", cat:"social", sub:"心理/职业", type:"writing"},
+
+  // === NEW: 高级替换词（同义词升级） ===
+  {en:"important → crucial / vital / essential / paramount", zh:"重要的 → 至关重要的", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"good → beneficial / favorable / remarkable / superb", zh:"好的 → 有益的/卓越的", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"bad → detrimental / adverse / harmful / unfavorable", zh:"坏的 → 有害的/不利的", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"many → numerous / a host of / a multitude of / substantial", zh:"许多 → 大量的/众多的", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"very → exceedingly / profoundly / remarkably / extremely", zh:"非常 → 极其/显著地", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"think → contemplate / ponder / hold the view that", zh:"认为 → 深思/持…观点", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"show → demonstrate / illustrate / manifest / reveal", zh:"显示 → 表明/揭示", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"solve → resolve / address / tackle / rectify", zh:"解决 → 化解/应对/纠正", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"use → utilize / employ / harness / exploit", zh:"使用 → 利用/运用", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"help → facilitate / assist / foster / aid", zh:"帮助 → 促进/协助/培养", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"change → alter / modify / transform / convert", zh:"改变 → 转变/改造", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"increase → augment / enhance / boost / escalate", zh:"增加 → 增强/提升", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"reduce → diminish / curtail / minimize / decline", zh:"减少 → 缩减/降低", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"improve → enhance / refine / optimize / ameliorate", zh:"改善 → 优化/提升", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"support → endorse / advocate / uphold / sustain", zh:"支持 → 赞同/倡导/维护", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"emphasize → highlight / underscore / accentuate / stress", zh:"强调 → 突出/着重", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"cause → give rise to / trigger / bring about / contribute to", zh:"导致 → 引起/促使", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"because → owing to / due to / on account of / in that", zh:"因为 → 由于/鉴于", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"so → hence / thus / consequently / accordingly", zh:"所以 → 因此/从而", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"different → various / diverse / a variety of / distinct", zh:"不同的 → 多样的/各异的", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"common → commonplace / universal / pervasive / prevalent", zh:"普遍的 → 普遍的/盛行的", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"famous → renowned / prominent / distinguished / notable", zh:"著名的 → 知名的/杰出的", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"protect → safeguard / shield / preserve / defend", zh:"保护 → 维护/捍卫", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"get → obtain / acquire / gain / attain", zh:"获得 → 获取/达成", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"need → require / necessitate / call for / demand", zh:"需要 → 要求/必需", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"provide → supply / furnish / render / offer", zh:"提供 → 供给/给予", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"understand → comprehend / grasp / perceive / discern", zh:"理解 → 领会/洞察", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"express → articulate / convey / voice / communicate", zh:"表达 → 阐述/传达", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"choose → select / opt for / elect / prefer", zh:"选择 → 选取/偏好", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"achieve → accomplish / attain / fulfill / realize", zh:"实现 → 达成/完成", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"accept → embrace / adopt / welcome / acknowledge", zh:"接受 → 接纳/认可", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"suggest → propose / recommend / advocate / advise", zh:"建议 → 提议/倡导", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"refuse → decline / reject / deny / repudiate", zh:"拒绝 → 婉拒/驳回", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"create → generate / craft / devise / formulate", zh:"创造 → 生成/构思/制定", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"analyze → examine / scrutinize / evaluate / assess", zh:"分析 → 审视/评估", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+  {en:"develop → cultivate / foster / nurture / promote", zh:"发展/培养 → 培育/促进", tip:"写作升级", cat:"synonym", sub:"替换", type:"synonym"},
+
+  // === NEW: 写作高频短语 ===
+  {en:"play a crucial role in ...", zh:"在…中发挥关键作用", tip:"万能短语", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"give top priority to ...", zh:"优先考虑…", tip:"建议措施", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"make full use of / take advantage of", zh:"充分利用", tip:"建议措施", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"put more emphasis on ...", zh:"更加强调…", tip:"观点表达", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"adapt oneself to ...", zh:"使自己适应…", tip:"个人发展", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"enhance / promote mutual understanding", zh:"增进相互了解", tip:"文化交流", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"relieve stress / burden", zh:"缓解压力/减轻负担", tip:"心理健康", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"offer job opportunities", zh:"提供就业机会", tip:"经济发展", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"mirror the social progress", zh:"反映社会进步", tip:"社会现象", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"guarantee stability and prosperity", zh:"保障稳定与繁荣", tip:"社会议题", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"realize one's dream / potential", zh:"实现梦想/发挥潜力", tip:"个人发展", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"broaden one's horizons", zh:"开阔视野", tip:"教育/旅行", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"keep pace with the times", zh:"与时俱进", tip:"万能", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"lay a solid foundation for ...", zh:"为…打下坚实基础", tip:"万能", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"arouse wide public concern", zh:"引起广泛社会关注", tip:"开头句式", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"be closely bound up with ...", zh:"与…密切相关", tip:"万能连接", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"benefit ... both physically and mentally", zh:"使…身心受益", tip:"万能好处", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"attach great importance to ...", zh:"高度重视…", tip:"观点表达", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"take effective measures to ...", zh:"采取有效措施…", tip:"建议措施", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"shoulder the responsibility to ...", zh:"肩负起…的责任", tip:"倡议升华", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"raise public awareness of ...", zh:"提高公众对…的意识", tip:"社会倡议", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"compared with / in comparison with", zh:"与…相比", tip:"对比论证", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"be confronted with ...", zh:"面临/面对…", tip:"问题引入", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"there is no denying that ...", zh:"不可否认…", tip:"让步段开头", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"it is universally acknowledged that ...", zh:"众所周知…", tip:"开头引入", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"spare no effort to do ...", zh:"不遗余力做…", tip:"决心表达", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"the pros and cons of ...", zh:"…的利弊", tip:"辩证分析", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"from my perspective / as far as I'm concerned", zh:"在我看来", tip:"个人观点", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"the merits far outweigh the demerits", zh:"利远大于弊", tip:"结论句", cat:"phrase", sub:"短语", type:"phrase"},
+  {en:"be conducive to ...", zh:"有利于…", tip:"万能好处", cat:"phrase", sub:"短语", type:"phrase"},
+
+  // === NEW: 逻辑连接词 ===
+  {en:"To begin with / First and foremost", zh:"首先", tip:"文章起始", cat:"connector", sub:"连接", type:"connector"},
+  {en:"Furthermore / Moreover / In addition", zh:"此外/而且", tip:"递进", cat:"connector", sub:"连接", type:"connector"},
+  {en:"However / Nevertheless / Nonetheless", zh:"然而/不过", tip:"转折", cat:"connector", sub:"连接", type:"connector"},
+  {en:"On the contrary / Conversely", zh:"相反地", tip:"对比", cat:"connector", sub:"连接", type:"connector"},
+  {en:"Therefore / Hence / Thus / Consequently", zh:"因此/所以", tip:"因果结论", cat:"connector", sub:"连接", type:"connector"},
+  {en:"As a result / Accordingly", zh:"结果是/相应地", tip:"因果", cat:"connector", sub:"连接", type:"connector"},
+  {en:"For instance / For example", zh:"例如", tip:"举例", cat:"connector", sub:"连接", type:"connector"},
+  {en:"A case in point is that ...", zh:"一个典型例子是…", tip:"举例升级", cat:"connector", sub:"连接", type:"connector"},
+  {en:"In conclusion / To sum up / All in all", zh:"总之/综上所述", tip:"总结", cat:"connector", sub:"连接", type:"connector"},
+  {en:"In a nutshell / In brief", zh:"简而言之", tip:"总结简练", cat:"connector", sub:"连接", type:"connector"},
+  {en:"In contrast / Whereas / While", zh:"相比之下/而", tip:"对比", cat:"connector", sub:"连接", type:"connector"},
+  {en:"Similarly / Likewise", zh:"同样地", tip:"类比", cat:"connector", sub:"连接", type:"connector"},
+  {en:"Specifically / To be more precise", zh:"具体来说/更准确地说", tip:"细化阐述", cat:"connector", sub:"连接", type:"connector"},
+  {en:"In other words / That is to say", zh:"换句话说/也就是说", tip:"解释", cat:"connector", sub:"连接", type:"connector"},
+  {en:"Not only ... but also ...", zh:"不仅…而且…", tip:"递进强调", cat:"connector", sub:"连接", type:"connector"},
+  {en:"On the one hand ... On the other hand ...", zh:"一方面…另一方面…", tip:"辩证两面", cat:"connector", sub:"连接", type:"connector"},
+  {en:"Last but not least", zh:"最后但同样重要的是", tip:"分论点收尾", cat:"connector", sub:"连接", type:"connector"},
+  {en:"Needless to say", zh:"不用说/毋庸置疑", tip:"强调", cat:"connector", sub:"连接", type:"connector"},
+  {en:"Taking all these into account", zh:"综合考虑以上因素", tip:"结论引入", cat:"connector", sub:"连接", type:"connector"},
+  {en:"It goes without saying that ...", zh:"不言而喻…", tip:"强调引入", cat:"connector", sub:"连接", type:"connector"},
+
+  // === NEW: 教育话题 ===
+  {en:"exam-oriented education", zh:"应试教育", tip:"教育核心词", cat:"edu", sub:"作文", type:"writing"},
+  {en:"quality-oriented education / well-rounded education", zh:"素质教育", tip:"对应试教育的反义词", cat:"edu", sub:"作文", type:"writing"},
+  {en:"rote learning / cramming", zh:"死记硬背/填鸭式教学", tip:"批判应试教育用", cat:"edu", sub:"作文", type:"writing"},
+  {en:"academic pressure", zh:"学业压力", tip:"学生话题", cat:"edu", sub:"作文", type:"writing"},
+  {en:"study abroad craze", zh:"留学热", tip:"教育现象", cat:"edu", sub:"作文", type:"writing"},
+  {en:"brain drain", zh:"人才流失", tip:"留学弊端", cat:"edu", sub:"作文", type:"writing"},
+  {en:"equal access to education", zh:"教育公平", tip:"社会议题", cat:"edu", sub:"作文", type:"writing"},
+  {en:"liberal arts vs. STEM", zh:"文科 vs. 理工科", tip:"教育方向争论", cat:"edu", sub:"作文", type:"writing"},
+  {en:"academic integrity / plagiarism", zh:"学术诚信/抄袭", tip:"教育+AI话题交叉", cat:"edu", sub:"作文", type:"writing"},
+  {en:"critical thinking vs. memorization", zh:"批判性思维 vs. 死记硬背", tip:"教育升级论述", cat:"edu", sub:"作文", type:"writing"},
+  {en:"practical skills vs. theoretical knowledge", zh:"实践技能 vs. 理论知识", tip:"教育辩论经典题", cat:"edu", sub:"作文", type:"writing"},
+  {en:"gaokao / college entrance examination", zh:"高考", tip:"中国特色教育", cat:"edu", sub:"翻译", type:"translation"},
+  {en:"compulsory education", zh:"义务教育", tip:"九年义务教育", cat:"edu", sub:"翻译", type:"translation"},
+  {en:"higher education", zh:"高等教育", tip:"大学阶段", cat:"edu", sub:"翻译", type:"translation"},
+  {en:"vocational education", zh:"职业教育", tip:"政策热点", cat:"edu", sub:"翻译", type:"translation"},
+  {en:"academic credit system", zh:"学分制", tip:"高校制度", cat:"edu", sub:"翻译", type:"translation"},
+  {en:"extracurricular activities", zh:"课外活动", tip:"学生生活", cat:"edu", sub:"翻译", type:"translation"},
+  {en:"online education / distance learning", zh:"在线教育/远程学习", tip:"AI+教育交叉", cat:"edu", sub:"翻译", type:"translation"},
+  {en:"curriculum reform", zh:"课程改革", tip:"教育改革", cat:"edu", sub:"翻译", type:"translation"},
+  {en:"enrollment / admission", zh:"招生/录取", tip:"制度词汇", cat:"edu", sub:"阅读", type:"reading"},
+  {en:"tuition fees", zh:"学费", tip:"经济+教育", cat:"edu", sub:"阅读", type:"reading"},
+  {en:"dropout rate", zh:"辍学率", tip:"社会问题", cat:"edu", sub:"阅读", type:"reading"},
+  {en:"academic performance", zh:"学业表现", tip:"教育研究", cat:"edu", sub:"阅读", type:"reading"},
+  {en:"teacher-student ratio", zh:"师生比", tip:"教育资源", cat:"edu", sub:"阅读", type:"reading"},
+  {en:"literacy rate", zh:"识字率", tip:"教育数据", cat:"edu", sub:"阅读", type:"reading"},
+  {en:"public vs. private education", zh:"公立 vs. 私立教育", tip:"教育体制对比", cat:"edu", sub:"作文", type:"writing"},
+  {en:"double reduction policy", zh:"双减政策", tip:"中国教育热点", cat:"edu", sub:"翻译", type:"translation"},
+  {en:"education inequality", zh:"教育不平等", tip:"社会+教育", cat:"edu", sub:"阅读", type:"reading"},
+
+  // === NEW: 饮食文化 ===
+  {en:"Chinese cuisine", zh:"中国菜/中餐", tip:"饮食文化总称", cat:"food", sub:"翻译", type:"translation"},
+  {en:"Eight Great Cuisines", zh:"八大菜系", tip:"川鲁粤苏浙闽湘徽", cat:"food", sub:"翻译", type:"translation"},
+  {en:"Sichuan cuisine", zh:"川菜", tip:"以麻辣著称", cat:"food", sub:"翻译", type:"translation"},
+  {en:"Cantonese cuisine", zh:"粤菜", tip:"清淡鲜美", cat:"food", sub:"翻译", type:"translation"},
+  {en:"tea culture", zh:"茶文化", tip:"翻译高频", cat:"food", sub:"翻译", type:"translation"},
+  {en:"tea ceremony", zh:"茶道", tip:"文化符号", cat:"food", sub:"翻译", type:"translation"},
+  {en:"dumpling / jiaozi", zh:"饺子", tip:"春节传统食物", cat:"food", sub:"翻译", type:"translation"},
+  {en:"hot pot", zh:"火锅", tip:"中国特色饮食", cat:"food", sub:"翻译", type:"translation"},
+  {en:"chopsticks", zh:"筷子", tip:"文化符号", cat:"food", sub:"翻译", type:"translation"},
+  {en:"the art of Chinese cooking", zh:"中国烹饪艺术", tip:"色香味俱全", cat:"food", sub:"翻译", type:"translation"},
+  {en:"color, aroma, and taste", zh:"色香味", tip:"美食评价三要素", cat:"food", sub:"翻译", type:"translation"},
+  {en:"food as medicine / medicinal diet", zh:"药食同源/药膳", tip:"中医+饮食", cat:"food", sub:"翻译", type:"translation"},
+  {en:"street food / snacks", zh:"小吃/街头美食", tip:"饮食文化", cat:"food", sub:"翻译", type:"translation"},
+  {en:"family reunion dinner / New Year's Eve dinner", zh:"年夜饭", tip:"春节习俗", cat:"food", sub:"翻译", type:"translation"},
+  {en:"mooncake", zh:"月饼", tip:"中秋节", cat:"food", sub:"翻译", type:"translation"},
+  {en:"zongzi / rice dumpling", zh:"粽子", tip:"端午节", cat:"food", sub:"翻译", type:"translation"},
+  {en:"steamed / boiled / stir-fried / deep-fried", zh:"蒸/煮/炒/炸", tip:"烹饪方式", cat:"food", sub:"翻译", type:"translation"},
+  {en:"staple food", zh:"主食", tip:"米饭、面条等", cat:"food", sub:"翻译", type:"translation"},
+  {en:"regional cuisine and dietary habits", zh:"地方菜系与饮食习惯", tip:"饮食多样性", cat:"food", sub:"作文", type:"writing"},
+  {en:"food culture and cultural identity", zh:"饮食文化与文化认同", tip:"文化+饮食交叉", cat:"food", sub:"作文", type:"writing"},
+
+  // === 翻译练习（中→英真题风格） ===
+  {en:"Chinese calligraphy is not only a means of communication but also a form of artistic expression.", zh:"中国书法不仅是一种交流方式，也是一种艺术表现形式。", tip:"文化类·not only but also", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"With a history of over 5,000 years, Chinese civilization has made significant contributions to world culture.", zh:"中华文明有五千多年的历史，对世界文化做出了重要贡献。", tip:"文化类·with结构开头", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"The Internet has fundamentally changed the way people access information and communicate with each other.", zh:"互联网从根本上改变了人们获取信息和相互交流的方式。", tip:"科技类·the way 从句", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"In recent years, China has made remarkable progress in the fields of science and technology, especially in artificial intelligence.", zh:"近年来，中国在科技领域取得了显著进步，尤其是在人工智能方面。", tip:"社会类·现在完成时", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"Traditional Chinese medicine, which emphasizes the balance between yin and yang, is gaining popularity around the world.", zh:"强调阴阳平衡的中医正在世界各地受到欢迎。", tip:"文化类·which定语从句", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"The high-speed rail network has greatly shortened travel time between cities and boosted regional economic development.", zh:"高铁网络大大缩短了城市间的旅行时间，促进了区域经济发展。", tip:"社会类·并列谓语", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"Many young people today prefer to pursue higher education abroad, which broadens their horizons and enhances their competitiveness.", zh:"如今许多年轻人选择出国留学，这拓宽了他们的视野，增强了竞争力。", tip:"教育类·which非限制定从", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"Environmental protection is not the responsibility of the government alone; every individual should play an active role.", zh:"环境保护不仅仅是政府的责任，每个人都应该发挥积极作用。", tip:"环保类·not...alone句式", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"The Spring Festival is the most important traditional festival in China, during which family members gather for a reunion dinner.", zh:"春节是中国最重要的传统节日，期间家人团聚吃年夜饭。", tip:"文化类·during which", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"With the improvement of living standards, people are paying more attention to the quality rather than the quantity of consumption.", zh:"随着生活水平的提高，人们更加关注消费的质量而非数量。", tip:"社会类·rather than对比", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"It is widely believed that mastering a foreign language requires not only memorization but also consistent practice.", zh:"人们普遍认为，掌握一门外语不仅需要记忆，还需要持续练习。", tip:"教育类·not only but also", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"Thanks to the development of e-commerce, consumers can now purchase goods from all over the world with just a few clicks.", zh:"由于电子商务的发展，消费者现在只需点击几下就能购买来自世界各地的商品。", tip:"科技类·thanks to开头", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"China's rural vitalization strategy aims to narrow the gap between urban and rural areas and improve the quality of life in the countryside.", zh:"中国的乡村振兴战略旨在缩小城乡差距，提高农村生活质量。", tip:"政策类·aims to", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"The concept of a low-carbon lifestyle has taken root among the younger generation, who are more environmentally conscious than ever before.", zh:"低碳生活的理念已经在年轻一代中扎根，他们比以往任何时候都更有环保意识。", tip:"环保类·比较级+ever before", cat:"trans", sub:"翻译", type:"translation"},
+  {en:"Paper-cutting, as an intangible cultural heritage, reflects the wisdom and aesthetic taste of the Chinese people.", zh:"剪纸作为非物质文化遗产，反映了中国人民的智慧和审美情趣。", tip:"文化类·as介词结构", cat:"trans", sub:"翻译", type:"translation"},
+
+  // === 作文模板 ===
+  {en:"[开头段] In recent years, the issue of ___ has aroused widespread concern. As far as I am concerned, ___ brings both opportunities and challenges.", zh:"近年来，___问题引起了广泛关注。在我看来，___既带来机遇也带来挑战。", tip:"开头·辩证类话题通用", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[开头段] It goes without saying that ___ plays an indispensable role in our daily life. However, there is growing debate over whether ___.", zh:"不用说，___在我们日常生活中不可或缺。然而，关于是否___的讨论越来越多。", tip:"开头·重要性+争议", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[转折段] Admittedly, ___ does have certain advantages. For instance, it can ___. Nevertheless, the negative consequences should not be overlooked.", zh:"诚然，___确实有一些优势。例如，它可以___。然而，其负面影响也不容忽视。", tip:"转折·让步+反驳", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[分论点1] First and foremost, ___ can significantly enhance ___. A case in point is that ___.", zh:"首先，___可以显著提升___。一个典型的例子是___。", tip:"分论点·举例论证", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[分论点2] Another factor worth noting is that ___ contributes to ___. Without ___, it would be difficult to ___.", zh:"另一个值得注意的因素是___有助于___。没有___，就很难___。", tip:"分论点·反面论证", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[建议措施] It is high time that effective measures were taken to address this issue. The government should ___, while individuals ought to ___.", zh:"是时候采取有效措施来解决这个问题了。政府应该___，而个人应该___。", tip:"措施·政府+个人并列", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[结论段] To sum up, ___ is a double-edged sword. Only by striking a balance between ___ and ___ can we fully harness its benefits.", zh:"总之，___是一把双刃剑。只有在___和___之间取得平衡，我们才能充分利用其好处。", tip:"结论·平衡升华", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[结论段] In a nutshell, the merits of ___ far outweigh its demerits. As long as we take a rational approach, we can ___.", zh:"简而言之，___的利远大于弊。只要我们采取理性的态度，就能___。", tip:"结论·利大于弊", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[AI话题模板] While AI brings unprecedented convenience to our lives, over-reliance on it may weaken our independent thinking and creativity.", zh:"虽然AI给生活带来前所未有的便利，但过度依赖可能削弱我们的独立思考和创造力。", tip:"AI话题·辩证核心句", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[环保话题模板] Living a low-carbon lifestyle is not as difficult as it seems. Small actions, such as using public transport and reducing plastic waste, can make a big difference.", zh:"低碳生活并不像看起来那么难。乘坐公交、减少塑料等小行动可以带来大改变。", tip:"环保话题·行动倡议", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[文化话题模板] Cultural inheritance does not mean clinging to the past; instead, it means breathing new life into traditions through modern means.", zh:"文化传承并不意味着固守过去，而是通过现代手段为传统注入新生命。", tip:"文化话题·辩证", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[教育话题模板] Education should not be confined to imparting knowledge; more importantly, it should cultivate critical thinking and a lifelong love of learning.", zh:"教育不应局限于传授知识，更重要的是培养批判性思维和终身学习的热情。", tip:"教育话题·not...more importantly", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[社会话题模板] The phenomenon of ___ mirrors the profound changes in our society. We need to understand its root causes rather than simply praising or criticizing it.", zh:"___现象反映了我们社会的深刻变化。我们需要理解其根源，而非简单地赞扬或批评。", tip:"社会话题·深度分析", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[个人成长模板] The journey of self-improvement is never easy, but it is through overcoming challenges that we grow stronger and more resilient.", zh:"自我提升的旅程从不轻松，但正是在克服挑战的过程中，我们变得更强大、更有韧性。", tip:"个人成长·励志金句", cat:"essay", sub:"作文", type:"writing"},
+  {en:"[万能升华] The road ahead may be long and arduous, but with determination and collective effort, we can build a brighter future.", zh:"前路漫漫亦灿灿，怀揣决心、共同努力，我们能够创造更美好的未来。", tip:"结论·万能升华句", cat:"essay", sub:"作文", type:"writing"},
+];
+
+// ====== 状态管理 ======
+const CATEGORIES = [
+  { id: "all", label: "全部", icon: "" },
+  { id: "ai", label: "🤖 AI 数字", icon: "" },
+  { id: "green", label: "🌱 绿色低碳", icon: "" },
+  { id: "culture", label: "🏮 文化传承", icon: "" },
+  { id: "social", label: "💬 社会热点", icon: "" },
+  { id: "synonym", label: "🔄 高级替换", icon: "" },
+  { id: "phrase", label: "📝 写作短语", icon: "" },
+  { id: "connector", label: "🔗 逻辑连接", icon: "" },
+  { id: "sentence", label: "✍️ 万能句式", icon: "" },
+  { id: "edu", label: "📚 教育", icon: "" },
+  { id: "food", label: "🍜 饮食文化", icon: "" },
+  { id: "trans", label: "🌐 翻译练习", icon: "" },
+  { id: "essay", label: "📄 作文模板", icon: "" },
+];
+
+const SUBCATS = [
+  { id: "all", label: "全部" },
+  { id: "写作", label: "写作" },
+  { id: "翻译", label: "翻译" },
+  { id: "作文", label: "作文" },
+  { id: "阅读", label: "阅读" },
+  { id: "替换", label: "替换" },
+  { id: "短语", label: "短语" },
+  { id: "连接", label: "连接" },
+  { id: "句式", label: "句式" },
+];
+
+let currentCat = "all";
+let currentSub = "all";
+let showMarked = JSON.parse(localStorage.getItem("cet6-showMarked") || "false");
+let reverseMode = false;
+let currentIdx = 0;
+let markedCards = new Set(JSON.parse(localStorage.getItem("cet6-marked") || "[]"));
+let knownCards = new Set(JSON.parse(localStorage.getItem("cet6-known") || "[]"));
+let unknownCards = new Set(JSON.parse(localStorage.getItem("cet6-unknown") || "[]"));
+let hideKnown = JSON.parse(localStorage.getItem("cet6-hideKnown") || "false");
+let onlyUnknown = JSON.parse(localStorage.getItem("cet6-onlyUnknown") || "false");
+let quizMode = false;
+let quizCorrect = 0;
+let quizTotal = 0;
+let filteredCards = [];
+
+function getFilteredCards() {
+  let cards = showMarked ? VOCAB_DATA.filter(c => markedCards.has(c.en)) : VOCAB_DATA;
+  // Auto-exit marked-only mode when no marked cards left
+  if (showMarked && cards.length === 0 && markedCards.size === 0) {
+    showMarked = false;
+    localStorage.setItem("cet6-showMarked", "false");
+    cards = VOCAB_DATA;
+  }
+  if (currentCat !== "all") {
+    cards = cards.filter(c => c.cat === currentCat);
+  }
+  if (currentSub !== "all") {
+    if (currentSub === "写作") cards = cards.filter(c => c.sub === "作文" || c.sub === "心理/职业");
+    else if (currentSub === "替换") cards = cards.filter(c => c.sub === "替换");
+    else if (currentSub === "短语") cards = cards.filter(c => c.sub === "短语");
+    else if (currentSub === "连接") cards = cards.filter(c => c.sub === "连接");
+    else if (currentSub === "作文") cards = cards.filter(c => c.sub === "作文");
+    else cards = cards.filter(c => c.sub === currentSub);
+  }
+  if (hideKnown) {
+    cards = cards.filter(c => !knownCards.has(c.en));
+  }
+  if (onlyUnknown) {
+    cards = cards.filter(c => unknownCards.has(c.en));
+    // Auto-exit if no unknown cards left
+    if (cards.length === 0) {
+      onlyUnknown = false;
+      localStorage.setItem("cet6-onlyUnknown", "false");
+      cards = hideKnown ? VOCAB_DATA.filter(c => !knownCards.has(c.en)) : VOCAB_DATA;
+    }
+  }
+  return cards;
+}
+
+function saveMarked() {
+  localStorage.setItem("cet6-marked", JSON.stringify([...markedCards]));
+}
+
+function saveKnown() {
+  localStorage.setItem("cet6-known", JSON.stringify([...knownCards]));
+}
+
+function saveUnknown() {
+  localStorage.setItem("cet6-unknown", JSON.stringify([...unknownCards]));
+}
+
+function markKnown() {
+  if (filteredCards.length === 0) return;
+  const item = filteredCards[currentIdx];
+  const en = item.en;
+  if (knownCards.has(en)) {
+    knownCards.delete(en);
+  } else {
+    knownCards.add(en);
+    unknownCards.delete(en);
+  }
+  saveKnown();
+  saveUnknown();
+  updateKnowBtns();
+  updateStats();
+  if (quizMode) quizAnswer(true);
+  nextCard();
+}
+
+function markUnknown() {
+  if (filteredCards.length === 0) return;
+  const item = filteredCards[currentIdx];
+  const en = item.en;
+  if (unknownCards.has(en)) {
+    unknownCards.delete(en);
+  } else {
+    unknownCards.add(en);
+    knownCards.delete(en);
+  }
+  saveKnown();
+  saveUnknown();
+  updateKnowBtns();
+  updateStats();
+  if (quizMode) quizAnswer(false);
+  nextCard();
+}
+
+function toggleOnlyUnknown() {
+  onlyUnknown = !onlyUnknown;
+  localStorage.setItem("cet6-onlyUnknown", String(onlyUnknown));
+  const btn = document.getElementById("btnOnlyUnknown");
+  btn.textContent = onlyUnknown ? "🎯 查看全部" : "🎯 只看待复习";
+  btn.classList.toggle("marked", onlyUnknown);
+  if (onlyUnknown) hideKnown = false; // mutually exclusive
+  currentIdx = 0;
+  refreshAll();
+}
+
+function toggleHideKnown() {
+  hideKnown = !hideKnown;
+  localStorage.setItem("cet6-hideKnown", String(hideKnown));
+  const btn = document.getElementById("btnHideKnown");
+  btn.textContent = hideKnown ? "👁 显示全部" : "👁 隐藏已掌握";
+  btn.classList.toggle("marked", hideKnown);
+  currentIdx = 0;
+  refreshAll();
+}
+
+function toggleQuiz() {
+  quizMode = !quizMode;
+  const btn = document.getElementById("btnQuiz");
+  if (quizMode) {
+    quizCorrect = 0;
+    quizTotal = 0;
+    btn.textContent = "📝 退出小测";
+    btn.classList.add("quiz-active");
+    currentIdx = 0;
+    shuffleCards();
+  } else {
+    btn.textContent = "📝 小测";
+    btn.classList.remove("quiz-active");
+  }
+  updateKnowBtns();
+  updateStats();
+  renderCard();
+}
+
+function quizAnswer(correct) {
+  quizTotal++;
+  if (correct) quizCorrect++;
+}
+
+function updateKnowBtns() {
+  const btnY = document.getElementById("btnKnowYes");
+  const btnN = document.getElementById("btnKnowNo");
+  if (filteredCards.length === 0) {
+    btnY.classList.remove("active");
+    btnN.classList.remove("active");
+    return;
+  }
+  if (quizMode) {
+    btnY.textContent = "✓ 答对了";
+    btnY.classList.remove("active");
+    btnN.textContent = "✗ 答错了";
+    btnN.classList.remove("active");
+  } else {
+    const item = filteredCards[currentIdx];
+    const isKnown = knownCards.has(item.en);
+    const isUnknown = unknownCards.has(item.en);
+    btnY.classList.toggle("active", isKnown);
+    btnY.textContent = isKnown ? "✓ 已掌握" : "✓ 我会了";
+    btnN.classList.toggle("active", isUnknown);
+    btnN.textContent = isUnknown ? "✗ 待复习" : "✗ 不会";
+  }
+}
+
+function updateStats() {
+  const row = document.getElementById("statsRow");
+  if (quizMode) {
+    row.innerHTML = `<span style="color:var(--accent);font-weight:600">📝 小测 <strong id="quizScore">✓ ${quizCorrect}</strong> / ${quizTotal}</span>`;
+    return;
+  }
+  // Restore normal stats HTML if it was overwritten by quiz mode
+  if (row.children.length !== 3) {
+    row.innerHTML = `<span><span class="stats-dot known"></span> 已掌握 <strong id="statKnown">0</strong></span><span><span class="stats-dot unknown"></span> 待复习 <strong id="statUnknown">0</strong></span><span><span class="stats-dot remaining"></span> 未标记 <strong id="statRemaining">0</strong></span>`;
+  }
+  const all = showMarked ? VOCAB_DATA.filter(c => markedCards.has(c.en)) : VOCAB_DATA;
+  let pool = all;
+  if (currentCat !== "all") pool = pool.filter(c => c.cat === currentCat);
+  if (currentSub !== "all") {
+    if (currentSub === "写作") pool = pool.filter(c => c.sub === "作文" || c.sub === "心理/职业");
+    else if (currentSub === "替换") pool = pool.filter(c => c.sub === "替换");
+    else if (currentSub === "短语") pool = pool.filter(c => c.sub === "短语");
+    else if (currentSub === "连接") pool = pool.filter(c => c.sub === "连接");
+    else if (currentSub === "作文") pool = pool.filter(c => c.sub === "作文");
+    else pool = pool.filter(c => c.sub === currentSub);
+  }
+  const k = pool.filter(c => knownCards.has(c.en)).length;
+  const u = pool.filter(c => unknownCards.has(c.en)).length;
+  const r = pool.length - k - u;
+  const elKnown = document.getElementById("statKnown");
+  const elUnknown = document.getElementById("statUnknown");
+  const elRemaining = document.getElementById("statRemaining");
+  if (elKnown) elKnown.textContent = k;
+  if (elUnknown) elUnknown.textContent = u;
+  if (elRemaining) elRemaining.textContent = Math.max(0, r);
+}
+
+// ====== 渲染 UI ======
+function renderCategories() {
+  const container = document.getElementById("categories");
+  container.innerHTML = CATEGORIES.map(c =>
+    `<button class="cat-btn${currentCat === c.id ? " active" : ""}" onclick="selectCat('${c.id}')">${c.label}</button>`
+  ).join("");
+}
+
+function renderSubtabs() {
+  const container = document.getElementById("subtabs");
+  container.innerHTML = SUBCATS.map(s =>
+    `<button class="subtab-btn${currentSub === s.id ? " active" : ""}" onclick="selectSub('${s.id}')">${s.label}</button>`
+  ).join("");
+}
+
+function selectCat(id) {
+  currentCat = id;
+  currentSub = "all";
+  currentIdx = 0;
+  refreshAll();
+}
+
+function selectSub(id) {
+  currentSub = id;
+  currentIdx = 0;
+  refreshAll();
+}
+
+function refreshAll() {
+  filteredCards = getFilteredCards();
+  if (currentIdx >= filteredCards.length) currentIdx = 0;
+  renderCategories();
+  renderSubtabs();
+  renderCard();
+  updateProgress();
+  updateMarkBtn();
+}
+
+function renderCard() {
+  const card = document.getElementById("card");
+
+  // Snapshot: disable transition, snap to front, THEN update content
+  card.style.transition = "none";
+  card.classList.remove("flipped");
+  card.offsetHeight; // force reflow — card is now instantly unflipped
+
+  // Reset entrance animation on text elements (not card-face, avoids backface transform conflict)
+  const animEls = document.querySelectorAll(".card-en, .card-zh");
+  animEls.forEach(el => { el.style.animation = "none"; el.offsetHeight; el.style.animation = ""; });
+
+  if (filteredCards.length === 0) {
+    document.getElementById("cardTag").textContent = "";
+    document.getElementById("cardIndex").textContent = "";
+    document.getElementById("cardEn").textContent = "没有匹配的词汇";
+    document.getElementById("cardZh").textContent = "";
+    document.getElementById("cardTip").textContent = "";
+    document.getElementById("cardBadge").textContent = "";
+    document.getElementById("cardBadge").className = "card-badge";
+    card.offsetHeight;
+    card.style.transition = "";
+    updateProgress();
+    return;
+  }
+
+  const item = filteredCards[currentIdx];
+
+  // Front — show English or Chinese based on reverse mode
+  document.getElementById("cardTag").textContent = reverseMode ? "中→英" : (item.sub || item.type);
+  document.getElementById("cardIndex").textContent = `${currentIdx + 1}/${filteredCards.length}`;
+  const frontText = reverseMode ? item.zh : item.en;
+  const enEl = document.getElementById("cardEn");
+  enEl.textContent = frontText;
+  // Auto-adjust font size for long text
+  const len = frontText.length;
+  if (len > 80) enEl.style.fontSize = "0.85rem";
+  else if (len > 60) enEl.style.fontSize = "0.95rem";
+  else if (len > 40) enEl.style.fontSize = "1.15rem";
+  else if (len > 25) enEl.style.fontSize = "1.35rem";
+  else enEl.style.fontSize = "1.6rem";
+  // Use Chinese-appropriate color when showing Chinese on front
+  enEl.style.color = reverseMode ? "#2D2B28" : "#2D2B28";
+
+  // Back — show the other side
+  document.getElementById("cardZh").textContent = reverseMode ? item.en : item.zh;
+  document.getElementById("cardTip").textContent = item.tip || "";
+  document.getElementById("cardZh").style.color = reverseMode ? "#2D2B28" : "#2D2B28";
+
+  const badge = document.getElementById("cardBadge");
+  let badgeClass = "card-badge badge-other";
+  if (item.type === "writing") badgeClass = "card-badge badge-writing";
+  else if (item.type === "translation") badgeClass = "card-badge badge-translation";
+  else if (item.type === "reading") badgeClass = "card-badge badge-reading";
+  else if (item.type === "sentence") badgeClass = "card-badge badge-sentence";
+  else if (item.type === "synonym") badgeClass = "card-badge badge-synonym";
+  else if (item.type === "phrase") badgeClass = "card-badge badge-phrase";
+  else if (item.type === "connector") badgeClass = "card-badge badge-connector";
+  badge.className = badgeClass;
+
+  const typeLabel = { writing: "写作", translation: "翻译", reading: "阅读", sentence: "句式", synonym: "替换", phrase: "短语", connector: "连接" };
+  badge.textContent = typeLabel[item.type] || item.sub || "";
+
+  // Update card status border
+  const isKnown = knownCards.has(item.en);
+  const isUnknown = unknownCards.has(item.en);
+  document.querySelectorAll(".card-face").forEach(face => {
+    if (isKnown) { face.classList.add("status-known"); face.classList.remove("status-unknown"); }
+    else if (isUnknown) { face.classList.add("status-unknown"); face.classList.remove("status-known"); }
+    else { face.classList.remove("status-known", "status-unknown"); }
+  });
+
+  updateProgress();
+  updateMarkBtn();
+  updateKnowBtns();
+  updateStats();
+
+  // Re-enable transition for next user-triggered flip
+  card.offsetHeight;
+  card.style.transition = "";
+}
+
+function updateProgress() {
+  const total = filteredCards.length;
+  const current = total === 0 ? 0 : currentIdx + 1;
+  document.getElementById("progressText").textContent = `${current}/${total}`;
+  document.getElementById("progressFill").style.width = total === 0 ? "0%" : `${(current / total) * 100}%`;
+}
+
+function updateMarkBtn() {
+  const btn = document.getElementById("btnMark");
+  if (filteredCards.length === 0) {
+    btn.textContent = "☆ 收藏";
+    btn.classList.remove("marked");
+    return;
+  }
+  const item = filteredCards[currentIdx];
+  const isMarked = markedCards.has(item.en);
+  btn.textContent = isMarked ? "★ 已收藏" : "☆ 收藏";
+  btn.classList.toggle("marked", isMarked);
+}
+
+// ====== 交互 ======
+function flipCard() {
+  if (filteredCards.length === 0) return;
+  const card = document.getElementById("card");
+  card.classList.toggle("flipped");
+}
+
+function nextCard() {
+  if (filteredCards.length === 0) return;
+  currentIdx = (currentIdx + 1) % filteredCards.length;
+  renderCard();
+}
+
+function prevCard() {
+  if (filteredCards.length === 0) return;
+  currentIdx = (currentIdx - 1 + filteredCards.length) % filteredCards.length;
+  renderCard();
+}
+
+function shuffleCards() {
+  if (filteredCards.length === 0) return;
+  currentIdx = Math.floor(Math.random() * filteredCards.length);
+  renderCard();
+}
+
+function toggleMark() {
+  if (filteredCards.length === 0) return;
+  const item = filteredCards[currentIdx];
+  if (markedCards.has(item.en)) {
+    markedCards.delete(item.en);
+  } else {
+    markedCards.add(item.en);
+  }
+  saveMarked();
+  updateMarkBtn();
+}
+
+function showOnlyMarked() {
+  showMarked = !showMarked;
+  localStorage.setItem("cet6-showMarked", String(showMarked));
+  const btn = document.getElementById("btnShowMarked");
+  btn.textContent = showMarked ? "📌 查看全部" : "📌 仅看收藏";
+  btn.classList.toggle("marked", showMarked);
+  currentIdx = 0;
+  refreshAll();
+}
+
+function toggleReverse() {
+  reverseMode = !reverseMode;
+  const btn = document.getElementById("btnReverse");
+  btn.textContent = reverseMode ? "🔤 英⇄中" : "🔤 中⇄英";
+  btn.classList.toggle("marked", reverseMode);
+  renderCard();
+}
+
+function resetProgress() {
+  currentIdx = 0;
+  document.getElementById("card").classList.remove("flipped");
+  renderCard();
+}
+
+// ====== 触屏滑动 ======
+let touchStartX = 0, touchStartY = 0;
+document.getElementById("cardContainer").addEventListener("touchstart", (e) => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.getElementById("cardContainer").addEventListener("touchend", (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+    e.preventDefault();
+    if (dx < 0) nextCard(); else prevCard();
+  }
+  // tap → let the onclick handler on card-container handle flipCard
+});
+
+// ====== 键盘快捷键 ======
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+  switch (e.key) {
+    case "ArrowLeft": prevCard(); break;
+    case "ArrowRight": nextCard(); break;
+    case " ": e.preventDefault(); flipCard(); break;
+    case "s": case "S": toggleMark(); break;
+    case "r": case "R": shuffleCards(); break;
+    case "k": case "K": markKnown(); break;
+    case "n": case "N": markUnknown(); break;
+  }
+});
+
+// ====== 初始化 ======
+function init() {
+  if (showMarked) {
+    const btn = document.getElementById("btnShowMarked");
+    btn.textContent = "📌 查看全部";
+    btn.classList.add("marked");
+  }
+  if (hideKnown) {
+    const btn = document.getElementById("btnHideKnown");
+    btn.textContent = "👁 显示全部";
+    btn.classList.add("marked");
+  }
+  if (onlyUnknown) {
+    const btn = document.getElementById("btnOnlyUnknown");
+    btn.textContent = "🎯 查看全部";
+    btn.classList.add("marked");
+  }
+  renderCategories();
+  renderSubtabs();
+  filteredCards = getFilteredCards();
+  renderCard();
+}
+
+init();
+</script>
+</body>
+</html>

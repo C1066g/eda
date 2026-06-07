@@ -1,0 +1,30 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+.Python
+*.egg-info/
+
+# MCP / tool caches
+.playwright-mcp/
+.ltspice-mcp/
+.claude/
+
+# SPICE simulation artifacts
+*.raw
+sim_*.log
+sim_*.fail
+sim_*.raw
+
+# OS / IDE
+.DS_Store
+.idea/
+*.swp
+
+# Large generated reports (keep source scripts)
+stock.html
+stock_analysis.html
+
+# KiCad backups & history
+**/rc_lowpass_1khz-backups/
+**/.history/

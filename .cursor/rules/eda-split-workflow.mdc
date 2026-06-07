@@ -1,0 +1,55 @@
+---
+description: 左 Cursor 讨论、右 KiCad 看图、后台 SPICEBridge 自动验证
+alwaysApply: true
+---
+
+# EDA 分屏工作流（用户默认布局）
+
+用户习惯：**左侧 Cursor Agent 讨论**，**右侧 KiCad 看/改原理图**，**SPICE 在后台验证**（不依赖弹浏览器，除非用户明确要求 viewer）。
+
+## 会话开始时
+
+若对话涉及电路设计、改元件、看原理图或验证规格：
+
+1. 用 `kicad` MCP 的 `open_project` 打开当前工作电路（优先本仓库）：
+   - `/Users/mac/eda/kicad_rc_lowpass/rc_lowpass_1khz.kicad_pro`
+   - 或用户指定的 `.kicad_pro`
+2. 用 `spicebridge` 加载/创建同一拓扑的电路状态（单一会话内复用同一设计，勿并行多个版本）。
+
+## 每次设计变更后（后台 SPICE）
+
+用户改需求、改 R/C/拓扑，或 KiCad 原理图有实质更新时，**自动在后台**（不必要用户再说「仿真一下」）：
+
+1. `spicebridge`：更新网表/元件值 → 跑合适分析（滤波器用 AC；时域电路用 transient；偏置用 DC op）
+2. `measure_*` / `compare_specs`：给出 -3dB、增益、关键节点等 **简短数字结论**
+3. 在回复里用 3～5 行汇报：元件值、仿真是否通过、与目标规格差距
+
+**不要**声称仿真结果，除非来自 `spicebridge` 或本仓库已跑的 ngspice 输出。
+
+## KiCad 与 SPICE 同步方向
+
+| 场景 | 顺序 |
+|------|------|
+| 从指标新设计 | spicebridge 选型/仿真 → 通过后 `export_kicad` 更新原理图 → 提示用户在右侧 KiCad 刷新/查看 |
+| 用户在 KiCad 侧改图 | `extract_schematic_netlist` 或项目网表 → spicebridge 加载并重新验证 |
+| 仅讨论未改电路 | 可只回答，不重复开 KiCad |
+
+原理图占位符（如 `{R1}`）必须在仿真前替换为具体 E24 数值，并在回复中写明。
+
+## 回复风格（用户正盯着 KiCad）
+
+- 短：结论 + 当前 R/C/关键测量 + 下一步
+- 不贴长网表；不把批处理日志全文贴进聊天
+- 默认 **不** 调用 `open_viewer`，除非用户说「浏览器看图 / open_viewer」
+- `drawio` 仅用于框图/说明图，不是主流程
+
+## 本仓库默认电路
+
+- KiCad：`kicad_rc_lowpass/rc_lowpass_1khz.kicad_pro`（1 kHz RC 低通示例）
+- SPICE 网表参考：`kicad_rc_lowpass/rc_lowpass_1khz.cir`（R=1.6k, C=100n）
+
+## 用户可说的口令
+
+- 「按分屏流程」→ 打开 KiCad 项目 + 后台 SPICE 验证当前设计
+- 「我改了 R1」→ 只重新跑 SPICE 并汇报
+- 「同步到 KiCad」→ export_kicad / 更新工程
