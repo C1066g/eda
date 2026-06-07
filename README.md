@@ -20,8 +20,16 @@
 
 ### GitHub Pages（在线访问）
 
-仓库 Settings → Pages → Source: **Deploy from branch** → Branch: `main` / folder: `/ (root)`  
-访问地址：`https://c1066g.github.io/eda/通信网络技术_考试中心.html`
+**推荐：GitHub Actions 部署**（已配置 `.github/workflows/deploy-pages.yml`）
+
+1. 打开 [Settings → Actions → General](https://github.com/C1066g/eda/settings/actions)
+   - **Workflow permissions** → 选 **Read and write permissions** → Save
+2. 打开 [Settings → Pages](https://github.com/C1066g/eda/settings/pages)
+   - **Build and deployment → Source** → 选 **GitHub Actions**（不是 Deploy from branch）
+3. 打开 [Actions](https://github.com/C1066g/eda/actions) 标签，等 `Deploy to GitHub Pages` 跑绿
+4. 访问：**https://c1066g.github.io/eda/**
+
+> 其他仓库开 Pages **不会**占用本项目地址。只有 `C1066g.github.io` 这个仓库名才是用户主页，与 `eda` 项目页互不冲突。
 
 ## EDA
 
