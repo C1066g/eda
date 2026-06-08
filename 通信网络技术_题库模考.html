@@ -48,8 +48,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","M
 <body>
 <div class="app" id="app"></div>
 <script src="题库数据.js"></script>
+<script src="题库数据2.js"></script>
 <script>
-const VALID_Q=BANK_Q.filter(q=>q.ans!=null&&q.opts&&q.opts.length>=2);
+const VALID_Q=BANK_Q.concat(BANK_Q2||[]).filter(q=>q.ans!=null&&q.opts&&q.opts.length>=2);
 VALID_Q.forEach(q=>q.userAns=null);
 const WRONG_KEY='net-exam-wrong';
 let submitted=false,order=VALID_Q.map((_,i)=>i),examMode=false,wrongOnly=false,timerSec=0,timerId=null;
@@ -121,7 +122,7 @@ function render(){
       <span>共 <b>${showQ.length}</b> 题</span>
     </div>`;
   }else{
-    const label=examMode?'限时模考 30题':wrongOnly?'错题本':`精选 ${VALID_Q.length} 题 (已过滤${BANK_Q.length-VALID_Q.length}道坏题)`;
+    const label=examMode?'限时模考 30题':wrongOnly?'错题本':`精选 ${VALID_Q.length} 题 (259+563=822题题库)`;
     html+=`<div class=stats>📋 ${label} · 点击选项作答 → 提交批改出分</div>`;
   }
   if(wrongOnly&&showQ.length===0)html+=`<div class=stats style="color:var(--amber)">错题本为空，先做一轮模考</div>`;
