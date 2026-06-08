@@ -7,86 +7,94 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0c0e16;--surface:#151822;--surface2:#1c2030;
-  --text:#e8eaf2;--text2:#8b90a5;--text3:#5c6178;
-  --accent:#7b93f5;--green:#6ee7a5;--red:#f07b8a;--amber:#f5c842;--purple:#b59cf5;
+  --bg:#F3F0EB;--surface:#FFFFFF;--surface2:#F8F6F2;
+  --text:#2D2B28;--text2:#7A7670;--text3:#B0ACA5;
+  --accent:#5B6FEF;--accent-soft:rgba(91,111,239,0.08);
+  --green:#3DA06C;--green-soft:rgba(61,160,108,0.1);
+  --red:#D9505C;--red-soft:rgba(217,80,92,0.08);
+  --amber:#D4920A;--amber-soft:rgba(212,146,10,0.1);
+  --purple:#7B5EC7;--purple-soft:rgba(123,94,199,0.08);
   --radius:14px;--ease:cubic-bezier(0.22,0.61,0.36,1);
 }
 body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
-  background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;padding:20px;
+  background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;padding:24px 20px;
 }
-body::before{
-  content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse 700px 500px at 15% -10%,rgba(123,147,245,0.07),transparent),
-             radial-gradient(ellipse 600px 400px at 85% 100%,rgba(110,231,165,0.05),transparent);
-  pointer-events:none;
-}
-.app{max-width:900px;margin:0 auto;position:relative;z-index:1}
+.app{max-width:900px;margin:0 auto}
 
-.hero{text-align:center;padding:28px 0 24px}
-.hero h1{font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;
-  background:linear-gradient(135deg,#d4dcff,#9eb0f5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero{text-align:center;padding:20px 0 16px}
+.hero h1{font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
 .hero p{color:var(--text2);font-size:0.85rem;margin-top:6px}
 
-.countdown{
-  display:flex;justify-content:center;gap:14px;margin:20px 0 28px;flex-wrap:wrap;
-}
+.countdown{display:flex;justify-content:center;gap:12px;margin:16px 0 20px;flex-wrap:wrap}
 .cd-box{
-  background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius);
-  padding:14px 20px;text-align:center;min-width:72px;
+  background:var(--surface);border:1px solid #EAE6DF;border-radius:var(--radius);
+  padding:14px 18px;text-align:center;min-width:66px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.04);
 }
-.cd-num{font-size:1.8rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1}
-.cd-label{font-size:0.65rem;color:var(--text3);margin-top:4px;letter-spacing:0.05em}
-.cd-urgent .cd-num{color:var(--red);animation:pulse 1.5s ease infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.cd-num{font-size:1.8rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.1}
+.cd-label{font-size:0.64rem;color:var(--text3);margin-top:3px;letter-spacing:0.04em}
+.cd-urgent .cd-num{color:var(--red);animation:pulse 1.2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
 
-.section-title{font-size:0.78rem;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin:24px 0 12px}
+.status-msg{
+  text-align:center;padding:10px 16px;border-radius:10px;margin-bottom:4px;
+  font-size:0.8rem;font-weight:500;
+}
+.status-msg.pre{background:var(--accent-soft);color:var(--accent)}
+.status-msg.today{background:rgba(212,146,10,0.1);color:var(--amber)}
+.status-msg.go{background:var(--green-soft);color:var(--green)}
 
-.plan{display:flex;flex-direction:column;gap:8px}
+.section-title{font-size:0.76rem;font-weight:600;color:var(--text3);letter-spacing:0.06em;margin:22px 0 10px}
+
+.plan{display:flex;flex-direction:column;gap:6px}
 .plan-day{
-  display:flex;gap:14px;align-items:flex-start;padding:14px 16px;
-  background:var(--surface);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius);
+  display:flex;gap:12px;align-items:flex-start;padding:12px 15px;
+  background:var(--surface);border:1px solid #EAE6DF;border-radius:var(--radius);
   transition:border-color 0.2s var(--ease);cursor:pointer;
+  box-shadow:0 1px 2px rgba(0,0,0,0.03);
 }
-.plan-day:hover{border-color:rgba(123,147,245,0.2)}
-.plan-day.today{border-color:rgba(123,147,245,0.35);background:rgba(123,147,245,0.06)}
-.plan-day.done{opacity:0.55}
-.plan-day.done .plan-check{color:var(--green)}
-.plan-date{min-width:52px;text-align:center}
-.plan-date .d{font-size:0.7rem;color:var(--text3)}
-.plan-date .w{font-size:0.85rem;font-weight:700;color:var(--accent)}
+.plan-day:hover{border-color:rgba(91,111,239,0.35)}
+.plan-day.today{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 2px 8px rgba(91,111,239,0.12)}
+.plan-day.past{opacity:0.45}
+.plan-day.past .plan-check{color:var(--green)}
+.plan-date{min-width:50px;text-align:center}
+.plan-date .d{font-size:0.68rem;color:var(--text3)}
+.plan-date .w{font-size:0.82rem;font-weight:700;color:var(--accent)}
 .plan-day.today .plan-date .w{color:var(--amber)}
 .plan-body{flex:1}
-.plan-body h3{font-size:0.88rem;font-weight:600;margin-bottom:4px}
-.plan-body p{font-size:0.76rem;color:var(--text2);line-height:1.5}
+.plan-body h3{font-size:0.86rem;font-weight:600;margin-bottom:3px}
+.plan-body p{font-size:0.74rem;color:var(--text2);line-height:1.5}
 .plan-check{font-size:1.1rem;color:var(--text3);cursor:pointer;padding:2px 6px;flex-shrink:0;user-select:none}
 .plan-check:hover{color:var(--green)}
 
 .tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
 .tool{
   display:block;text-decoration:none;color:inherit;
-  background:var(--surface);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius);
-  padding:16px 18px;transition:all 0.25s var(--ease);
+  background:var(--surface);border:1px solid #EAE6DF;border-radius:var(--radius);
+  padding:16px 18px;transition:all 0.2s var(--ease);
+  box-shadow:0 1px 3px rgba(0,0,0,0.03);
 }
-.tool:hover{border-color:rgba(123,147,245,0.25);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.2)}
+.tool:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 16px rgba(91,111,239,0.1)}
 .tool .icon{font-size:1.4rem;margin-bottom:8px}
-.tool h3{font-size:0.88rem;font-weight:600;margin-bottom:4px}
+.tool h3{font-size:0.86rem;font-weight:600;margin-bottom:4px;color:var(--text)}
 .tool p{font-size:0.72rem;color:var(--text2);line-height:1.4}
 .tool .badge{display:inline-block;font-size:0.62rem;padding:2px 7px;border-radius:8px;margin-top:6px;font-weight:600}
-.badge-rec{background:rgba(245,200,66,0.12);color:var(--amber)}
-.badge-new{background:rgba(110,231,165,0.12);color:var(--green)}
+.badge-rec{background:var(--amber-soft);color:var(--amber)}
+.badge-new{background:var(--green-soft);color:var(--green)}
+.badge-key{background:var(--red-soft);color:var(--red)}
 
 .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:8px}
 .stat{
-  background:var(--surface2);border-radius:10px;padding:12px 14px;text-align:center;
+  background:var(--surface);border-radius:10px;padding:12px 14px;text-align:center;
+  border:1px solid #EAE6DF;
 }
 .stat .n{font-size:1.3rem;font-weight:700;color:var(--accent)}
 .stat .l{font-size:0.68rem;color:var(--text3);margin-top:2px}
 
 .wrong-bar{
   display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
-  background:rgba(240,123,138,0.08);border:1px solid rgba(240,123,138,0.15);border-radius:var(--radius);
+  background:var(--red-soft);border:1px solid rgba(217,80,92,0.2);border-radius:var(--radius);
   padding:14px 18px;margin-top:16px;
 }
 .wrong-bar p{font-size:0.82rem;color:var(--red)}
@@ -99,16 +107,17 @@ body::before{
 .tips{
   background:var(--surface);border-radius:var(--radius);padding:16px 18px;
   border-left:3px solid var(--purple);margin-top:16px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.03);
 }
 .tips h3{font-size:0.82rem;color:var(--purple);margin-bottom:8px}
 .tips ul{font-size:0.76rem;color:var(--text2);line-height:1.7;padding-left:18px}
 .tips li{margin-bottom:2px}
 
 @media(max-width:600px){
-  body{padding:12px}
+  body{padding:14px 10px}
   .hero h1{font-size:1.25rem}
   .tools{grid-template-columns:1fr 1fr}
-  .cd-box{padding:10px 14px;min-width:60px}
+  .cd-box{padding:10px 12px;min-width:56px}
   .cd-num{font-size:1.4rem}
 }
 </style>
@@ -122,10 +131,11 @@ body::before{
   </div>
 
   <div class="countdown" id="countdown"></div>
+  <div id="statusMsg"></div>
 
   <div class="stats" id="stats"></div>
 
-  <div class="section-title">📅 冲刺计划（6/6 → 6/10 考试）</div>
+  <div class="section-title">📅 冲刺计划</div>
   <div class="plan" id="plan"></div>
 
   <div class="section-title">🛠 复习工具</div>
@@ -158,16 +168,16 @@ body::before{
       <h3>快速复习</h3>
       <p>章节速查表，考前最后过一遍</p>
     </a>
-    <a class="tool" href="通信网络技术_章节作业复习_第1章.md">
-      <div class="icon">📄</div>
-      <h3>第1章作业答案</h3>
-      <p>概论 · 计算题+单选+判断</p>
-    </a>
     <a class="tool" href="通信网络技术_第4章公式速查.html">
       <div class="icon">📐</div>
       <h3>第4章公式速查</h3>
       <p>子网/CIDR/分片/RIP · 含作业原题</p>
-      <span class="badge badge-rec">重点</span>
+      <span class="badge badge-key">重点</span>
+    </a>
+    <a class="tool" href="通信网络技术_章节作业复习_第1章.md">
+      <div class="icon">📄</div>
+      <h3>第1章作业答案</h3>
+      <p>概论 · 计算题+单选+判断</p>
     </a>
     <a class="tool" href="通信网络技术_章节作业复习_第4章.md">
       <div class="icon">📄</div>
@@ -214,8 +224,15 @@ function togglePlan(i){
   renderPlan();
 }
 
-function renderCountdown(){
+function renderAll(){
   const now=new Date();
+  renderCountdown(now);
+  renderStatus(now);
+  renderPlan(now);
+  renderStats();
+}
+
+function renderCountdown(now){
   const diff=EXAM_DATE-now;
   const el=document.getElementById('countdown');
   if(diff<=0){
@@ -225,28 +242,62 @@ function renderCountdown(){
   const d=Math.floor(diff/86400000);
   const h=Math.floor((diff%86400000)/3600000);
   const m=Math.floor((diff%3600000)/60000);
-  const urgent=d<=1;
+  const s=Math.floor((diff%60000)/1000);
+  const urgent=d<1;
   el.innerHTML=`
     <div class="cd-box${urgent?' cd-urgent':''}"><div class="cd-num">${d}</div><div class="cd-label">天</div></div>
     <div class="cd-box"><div class="cd-num">${h}</div><div class="cd-label">时</div></div>
     <div class="cd-box"><div class="cd-num">${m}</div><div class="cd-label">分</div></div>
+    <div class="cd-box"><div class="cd-num">${s}</div><div class="cd-label">秒</div></div>
   `;
 }
 
-function renderPlan(){
+function renderStatus(now){
+  const todayStr=`${now.getMonth()+1}/${now.getDate()}`;
+  const el=document.getElementById('statusMsg');
+  const hasPast=PLAN.some(p=>isPast(p.date,todayStr));
+  const hasToday=PLAN.some(p=>p.date===todayStr);
+  const examPassed=now>=EXAM_DATE;
+  if(examPassed){
+    el.innerHTML='🎯 <b>考试进行中</b> · 祝你顺利！';
+    el.className='status-msg go';
+  }else if(hasToday){
+    el.innerHTML='🔥 <b>今天是关键日</b> · 按计划执行，加油！';
+    el.className='status-msg today';
+  }else if(hasPast){
+    const left=PLAN.filter(p=>!isPast(p.date,todayStr)&&p.link!=='').length;
+    el.innerHTML=`📋 冲刺进行中 · 还剩 <b>${left}</b> 天复习`;
+    el.className='status-msg pre';
+  }else{
+    const daysToStart=Math.ceil((new Date('2026-06-06T00:00:00')-now)/86400000);
+    el.innerHTML=`⏳ 冲刺计划 <b>${daysToStart}</b> 天后开始 · 现在可以提前浏览`;
+    el.className='status-msg pre';
+  }
+}
+
+function isPast(d,todayStr){
+  const months={'6':6};
+  const [m,d2]=todayStr.split('/').map(Number);
+  const [pm,pd]=d.split('/').map(Number);
+  return pm<m||(pm===m&&pd<d2);
+}
+
+function renderPlan(now){
   const done=getPlanDone();
-  const today=new Date();
-  const todayStr=`${today.getMonth()+1}/${today.getDate()}`;
+  const todayStr=`${now.getMonth()+1}/${now.getDate()}`;
   document.getElementById('plan').innerHTML=PLAN.map((p,i)=>{
     const isToday=p.date===todayStr;
-    const isDone=done.includes(i);
-    return`<div class="plan-day${isToday?' today':''}${isDone?' done':''}" ${p.link?`onclick="location.href='${p.link}'"`:''}>
+    const isPastDay=isPast(p.date,todayStr);
+    let cls='';
+    if(isToday)cls=' today';
+    else if(isPastDay)cls=' past';
+    return`<div class="plan-day${cls}" ${p.link?`onclick="location.href='${p.link}'"`:''}>
       <div class="plan-date"><div class="d">${p.date}</div><div class="w">${p.day}</div></div>
       <div class="plan-body">
         <h3>${p.ch} ${p.title}</h3>
         <p>${p.tasks}</p>
       </div>
-      <span class="plan-check" onclick="event.stopPropagation();togglePlan(${i})">${isDone?'✅':'○'}</span>
+      <span class="plan-check" onclick="event.stopPropagation();togglePlan(${i})">${done.includes(i)?'✅':'○'}</span>
     </div>`;
   }).join('');
 }
@@ -265,13 +316,13 @@ function renderStats(){
       <p>📕 错题本有 <b>${wrong.length}</b> 道题待复习</p>
       <a href="通信网络技术_题库模考.html?mode=wrong">刷错题 →</a>
     </div>`;
+  }else{
+    bar.innerHTML='';
   }
 }
 
-renderCountdown();
-renderPlan();
-renderStats();
-setInterval(renderCountdown,60000);
+renderAll();
+setInterval(()=>renderAll(),1000);
 </script>
 </body>
 </html>
