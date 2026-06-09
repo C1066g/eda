@@ -48,29 +48,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","M
 <body>
 <div class="app" id="app"></div>
 <script src="题库数据.js"></script>
-<script src="题库数据2.js"></script>
 <script>
-// Two independent banks
-const BANK_V1=BANK_Q.filter(q=>q.ans!=null&&q.opts&&q.opts.length>=2);
-const BANK_V2=(BANK_Q2||[]).filter(q=>q.ans!=null&&q.opts&&q.opts.length>=2);
-BANK_V1.forEach(q=>{q.userAns=null;});
-BANK_V2.forEach(q=>{q.userAns=null;});
-let currentBank='v1';
-function getBank(){return currentBank==='v1'?BANK_V1:BANK_V2;}
-function switchBank(b){
-  if(b===currentBank)return;
-  currentBank=b;examMode=false;wrongOnly=false;submitted=false;
-  if(timerId){clearInterval(timerId);timerId=null;}
-  getBank().forEach(q=>q.userAns=null);
-  order=getBank().map((_,i)=>i);render();
-}
+const VALID_Q=BANK_Q.filter(q=>q.ans!=null&&q.opts&&q.opts.length>=2);
+VALID_Q.forEach(q=>q.userAns=null);
 const WRONG_KEY='net-exam-wrong';
-let submitted=false,examMode=false,wrongOnly=false,timerSec=0,timerId=null;
-let order=getBank().map((_,i)=>i);
+let submitted=false,order=VALID_Q.map((_,i)=>i),examMode=false,wrongOnly=false,timerSec=0,timerId=null;
 if(new URLSearchParams(location.search).get('mode')==='wrong')wrongOnly=true;
 
-// wrongOnly searches ALL banks
-const ALL_Q=BANK_V1.concat(BANK_V2);
 function qKey(q){return q.q.slice(0,60);}
 function saveWrong(q){
   let w=[];try{w=JSON.parse(localStorage.getItem(WRONG_KEY)||'[]');}catch{}
@@ -80,50 +64,44 @@ function saveWrong(q){
 }
 function getWrongSet(){try{return new Set(JSON.parse(localStorage.getItem(WRONG_KEY)||'[]').map(x=>x.q));}catch{return new Set();}}
 function getPool(){
-  const bank=getBank();
-  if(wrongOnly){const ws=getWrongSet();return bank.map((q,i)=>i).filter(i=>ws.has(qKey(bank[i])));}
-  return examMode?order:bank.map((_,i)=>i);
+  if(wrongOnly){const ws=getWrongSet();return VALID_Q.map((q,i)=>i).filter(i=>ws.has(qKey(VALID_Q[i])));}
+  return examMode?order:VALID_Q.map((_,i)=>i);
 }
 function shuffleAll(){
-  const bank=getBank();
-  const pool=wrongOnly?getPool():bank.map((_,i)=>i);
+  const pool=wrongOnly?getPool():VALID_Q.map((_,i)=>i);
   order=[...pool];
   for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
-  bank.forEach(q=>q.userAns=null);submitted=false;render();
+  VALID_Q.forEach(q=>q.userAns=null);submitted=false;render();
 }
 function startExam(){
-  const bank=getBank();
-  examMode=true;wrongOnly=false;submitted=false;bank.forEach(q=>q.userAns=null);
-  const all=bank.map((_,i)=>i);
+  examMode=true;wrongOnly=false;submitted=false;VALID_Q.forEach(q=>q.userAns=null);
+  const all=VALID_Q.map((_,i)=>i);
   for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
-  order=all.slice(0,Math.min(30,all.length));timerSec=1800;
+  order=all.slice(0,30);timerSec=1800;
   if(timerId)clearInterval(timerId);
   timerId=setInterval(()=>{timerSec--;if(timerSec<=0){clearInterval(timerId);submitAll();}renderTimer();},1000);
   render();
 }
 function renderTimer(){const el=document.getElementById('timer');if(!el)return;el.textContent='⏱ '+Math.floor(timerSec/60)+':'+String(timerSec%60).padStart(2,'0');}
 function resetAll(){
-  const bank=getBank();
   examMode=false;wrongOnly=false;
   if(timerId){clearInterval(timerId);timerId=null;}
-  bank.forEach(q=>q.userAns=null);submitted=false;order=bank.map((_,i)=>i);render();
+  VALID_Q.forEach(q=>q.userAns=null);submitted=false;order=VALID_Q.map((_,i)=>i);render();
 }
 function submitAll(){
   submitted=true;
-  getPool().forEach(qi=>{const q=getBank()[qi];if(q.userAns!=null&&q.userAns!==q.ans)saveWrong(q);});
+  getPool().forEach(qi=>{const q=VALID_Q[qi];if(q.userAns!=null&&q.userAns!==q.ans)saveWrong(q);});
   if(timerId){clearInterval(timerId);timerId=null;}
   render();window.scrollTo({top:0,behavior:'smooth'});
 }
-function pick(qi,j){getBank()[qi].userAns=j;render();}
+function pick(qi,j){VALID_Q[qi].userAns=j;render();}
 function toggleWrong(){wrongOnly=!wrongOnly;examMode=false;if(timerId){clearInterval(timerId);timerId=null;}submitted=false;order=getPool();render();}
 
 function render(){
-  const bank=getBank();
   const showQ=getPool();
   let correct=0;
-  if(submitted)correct=showQ.filter(qi=>bank[qi].userAns===bank[qi].ans).length;
+  if(submitted)correct=showQ.filter(qi=>VALID_Q[qi].userAns===VALID_Q[qi].ans).length;
   const ws=getWrongSet().size;
-  const labelMap={v1:'📚 原题库 '+BANK_V1.length+'题',v2:'📑 PPT题库 '+BANK_V2.length+'题'};
   let html=`<a class=nav-home href="通信网络技术_考试中心.html">← 考试中心</a>
   <div class=topbar><h1>通信网络技术 · 题库模考</h1>
     <span>${examMode?'<span class=timer id=timer></span>':''}
@@ -135,10 +113,6 @@ function render(){
     <button class="act act-shuffle act-reset" onclick="shuffleAll()">🔀 随机排序</button>
     <button class="act act-reset" onclick="resetAll()">↺ 全部重做</button>
     <button class="act act-reset" onclick="toggleWrong()" style="${wrongOnly?'border-color:var(--red);color:var(--red)':''}">📕 错题本${ws?'('+ws+')':''}</button>
-  </div>
-  <div class=abar style="margin-bottom:12px">
-    <button class="act act-reset" onclick="switchBank('v1')" style="${currentBank==='v1'?'background:var(--accent);color:#fff;border-color:var(--accent)':''}">📚 原题库 (${BANK_V1.length}题)</button>
-    <button class="act act-reset" onclick="switchBank('v2')" style="${currentBank==='v2'?'background:var(--accent);color:#fff;border-color:var(--accent)':''}">📑 PPT题库 (${BANK_V2.length}题)</button>
   </div>`;
   if(submitted){
     html+=`<div class=stats>
@@ -147,12 +121,12 @@ function render(){
       <span>共 <b>${showQ.length}</b> 题</span>
     </div>`;
   }else{
-    const label=examMode?'限时模考 30题':wrongOnly?'错题本（跨题库）':`📋 ${currentBank==='v1'?'原题库':'PPT题库'} · ${bank.length}题 · 点击选项作答`;
-    html+=`<div class=stats>${label}</div>`;
+    const label=examMode?'限时模考 30题':wrongOnly?'错题本':`精选 ${VALID_Q.length} 题 (已过滤${BANK_Q.length-VALID_Q.length}道坏题)`;
+    html+=`<div class=stats>📋 ${label} · 点击选项作答 → 提交批改出分</div>`;
   }
   if(wrongOnly&&showQ.length===0)html+=`<div class=stats style="color:var(--amber)">错题本为空，先做一轮模考</div>`;
   for(let idx=0;idx<showQ.length;idx++){
-    const qi=showQ[idx],q=bank[qi];
+    const qi=showQ[idx],q=VALID_Q[qi];
     const isWrong=submitted&&q.userAns!=null&&q.userAns!==q.ans;
     const isCorrect=submitted&&q.userAns===q.ans;
     html+=`<div class="qcard${isWrong?' wrong':''}${isCorrect?' correct':''}">
